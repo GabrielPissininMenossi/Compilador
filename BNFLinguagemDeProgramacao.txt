@@ -1,18 +1,47 @@
-<especificadora-de-tipo> ::= void | char | int | double | short | long | String
+//tipificacao
+<especificadora-de-tipo> ::= "void" | "char" | "int" | "double" | "short" | "long" | "String"
 
-<operador-atribuicao> ::= = | *= | /= | %= | += | -= | <<= | >>= | &= | ^= | |=
+//operadores Relacionais e unitarios
+<operador> ::= <operador-atribuicao>
+		| <operador-unitario>
 
-<operador-unitario> ::= & | * | + | - | ~ | !
+<operador-atribuicao> ::= "=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | "&=" | "^=" | "|="
 
-//declaração
-<declaracao> ::=
+<operador-unitario> ::= "&" | "*" | "+" | "-" | "~" | "!" | "/"
 
+//declaracao geral
+<declaracao> ::= 
+
+//declaracao estruturas de controle
 <declaracao-selecao> ::= 
-		if (<expressao>) <declaracao>
-		| if (<expressao>) <declaracao> else <declaracao>
-		| switch (<expressao>) <declaracao>
+		"if" ( <expressao> ")" <declaracao>
+		| "if" "(" <expressao> ")" <declaracao> "else" <declaracao>
+		| "switch" "(" <expressao> ")" <declaracao>
 
 <declaracao-iteracao> ::= 
-		while ( <expressao> ) <declaracao>
-		| do <declaracao> while ( <expressao> ) ;
-		| for ({<expressao>}?; {<expressao>}?; {<expressao>}?) <declaracao>
+		"while" "(" <expressao> ")" <declaracao>
+		| "do" <declaracao> while "(" <expressao> ")" ";"
+		| "for" "(" {<expressao>}? ";" {<expressao>}? ";" {<expressao>}? ")" <declaracao>
+
+//Expressoes
+<declaracao-expressao> ::= {<expressao>}?;
+
+<expressao> ::= <valor> {<operador> <valor>}
+		| {<expressao>}? <id> <operador> <num> {<expressao>}
+		| {<expressao>}? <num> <operador> <id> {<expressao>}
+		| <operador>
+
+<valor> ::= <num>
+		| <id>
+
+//Numeros
+<num> ::= 0 | 1 | ... | 9
+
+//Letras
+<letra> ::= a | b | ... | z | A | B | ... | Z
+
+//Identificadores -> variáveis
+<id> ::= <letra>
+		| <id><letra>
+		| <id><num>
+		| <id>_

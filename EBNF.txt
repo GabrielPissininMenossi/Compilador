@@ -17,9 +17,8 @@ declaracaoAtribuicao = identificador "=" expressao ";"
 - Estruturas de Controle
 
 	- Condicional
-		
-	declaracaoSelecao = "if" "(" expressao ")" comando // caso 1, sem else
-	declaracaoSelecao = "if" "(" expressao ")" comando ["else" comando ] // caso 2, com else
+
+	declaracaoSelecao = "if" "(" expressao ")" comando ["else" comando]
 
 	- Repetição
 
