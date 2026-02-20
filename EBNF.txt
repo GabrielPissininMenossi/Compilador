@@ -4,15 +4,18 @@ Resumo:
 ( ): Agrupamento
 { }: Repetição
 
+
 - Tipagem e Variáveis
 
 tipoVariavel = "void" | "char" | "short" | "int" | "long" | "float" | "double"
 declaracaoVariavel = tipoVariavel identificador ";" // caso 1, apenas declarou
 declaracaoVariavel = tipoVariavel identificador [ "=" expressao ] ";" // caso 2, declarou e atribuiu
  
+
 - Atribuição
 
 declaracaoAtribuicao = identificador "=" expressao ";" 
+
 
 - Estruturas de Controle
 
@@ -25,6 +28,22 @@ declaracaoAtribuicao = identificador "=" expressao ";"
 	declaracaoIteracao = "while" "(" expressao ")" comando | "for" "(" [atribuicao] ";" [expressao] ";" [atribuicao] ")" comando | 
 						 "do" comando "while" "(" expressao ")" ";"
 
+
 - Expressões
 
-operadorRelacional = "<" | ">" | "<=" | ">=" | "==" | "!="
+digito = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+numero = digito { digito } ;
+
+valor = numero | identificador | "(" expressaoLogica ")" | "!" valor ;
+
+operadorAritmetico = "+" | "-" | "*" | "/" | "%" ;
+operadorRelacional = "<" | ">" | "<=" | ">=" | "==" | "!=" ;
+operadorLogico = "&&" | "||" ;
+
+expressaoAritmetica = valor { operadorAritmetico valor } ;
+
+expressaoRelacional = expressaoAritmetica
+                      [ operadorRelacional expressaoAritmetica ] ;
+
+expressaoLogica = expressaoRelacional
+                  { operadorLogico expressaoRelacional } ;
