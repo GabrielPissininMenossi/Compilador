@@ -23,7 +23,8 @@ declaracaoAtribuicao = identificador "=" expressao ";"
 
 	- Repetição
 
-	declaracaoIteracao = "while" "(" expressao ")" comando
+	declaracaoIteracao = "while" "(" expressao ")" comando | "for" "(" [atribuicao] ";" [expressao] ";" [atribuicao] ")" comando | 
+						 "do" comando "while" "(" expressao ")" ";"
 
 - Expressões
 
