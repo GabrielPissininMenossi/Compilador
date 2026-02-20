@@ -1,0 +1,30 @@
+Resumo:
+" ": Terminal
+[ ]: Opcional
+( ): Agrupamento
+{ }: Repetição
+
+- Tipagem e Variáveis
+
+tipoVariavel = "void" | "char" | "short" | "int" | "long" | "float" | "double"
+declaracaoVariavel = tipoVariavel identificador ";" // caso 1, apenas declarou
+declaracaoVariavel = tipoVariavel identificador [ "=" expressao ] ";" // caso 2, declarou e atribuiu
+ 
+- Atribuição
+
+declaracaoAtribuicao = identificador "=" expressao ";" 
+
+- Estruturas de Controle
+
+	- Condicional
+		
+	declaracaoSelecao = "if" "(" expressao ")" comando // caso 1, sem else
+	declaracaoSelecao = "if" "(" expressao ")" comando ["else" comando ] // caso 2, com else
+
+	- Repetição
+
+	declaracaoIteracao = "while" "(" expressao ")" comando
+
+- Expressões
+
+operadorRelacional = "<" | ">" | "<=" | ">=" | "==" | "!="
