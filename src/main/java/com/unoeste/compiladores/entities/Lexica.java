@@ -14,8 +14,9 @@ public class Lexica
     private List<String> tipos = new ArrayList<>(Arrays.asList("void", "char", "short", "int", "long", "float", "double"));
     private List<String> comandosReservados = new ArrayList<>(Arrays.asList("while", "if", "else"));
     private List<String> opMatematicos = new ArrayList<>(Arrays.asList("*", "+", "-", "/", "%", "!"));
-    private List<String> outros = new ArrayList<>(Arrays.asList("{", "}", ",", "=", ";", ".", "(", ")"));
+    private List<Character> unitarios = new ArrayList<>(Arrays.asList('{', '}', ',', '=', ';', '.', '(', ')', '"'));
     private List<Token> tokens = new ArrayList<>();
+    private List<Character> especiais = new ArrayList<>(Arrays.asList('@', '#', '$'));
 
     //exemplo de execução no main
 //    for(linha in linhas) // a partir do token, definir a cor
@@ -59,13 +60,98 @@ public class Lexica
     private void separarTokens(String cadeia)
     {
         int i = 0;
+        String token = "";
         while (i < cadeia.length())
         {
+            char c = cadeia.charAt(i);
 
+            if(!letras.contains(c) && !numeros.contains(c))
+            {
+                if (!token.isEmpty())
+                {
+                    // adiciona (funcao para validar token)
+                    addToken(token);
+                    System.out.println(token);
+                    token = "";
 
+                }
+                token += c;
+
+                // <= , >= , ==, !=
+                if (cadeia.length() > i + 1 && cadeia.charAt(i + 1) == '=')
+                {
+                    token += cadeia.charAt(i + 1);
+                    i++;
+
+                }
+                // adiciona (funcao para validar token)
+                addToken(token);
+                System.out.println(token);
+                token = "";
+            }
+            else
+            {
+                if(token.isEmpty() && !primeiroDigitoValido(c)) //token inválido -> marcar a linha
+                {
+                    System.out.println("Caracter Invalido: "+c);
+                }
+                else
+                {
+                    token += c;
+                }
+            }
 
             i++;
         }
+        if (!token.isEmpty())
+        {
+            addToken(token);
+            System.out.println(token); // adiciona (funcao para validar token)
+        }
+    }
+
+    private void addToken(String token)
+    {
+        Token novoToken = new Token(verificarCategoria(token), token);
+        tokens.add(novoToken);
+    }
+
+    public String verificarCategoria(String token)
+    {
+        if(opRelacional.contains(token))
+            verificarSubRelacional(token);
+
+//        if(opRelacional.contains(token))
+//            verificarSubRelacional(token);
+//
+//        if(opRelacional.contains(token))
+//            verificarSubRelacional(token);
+//
+//        if(opRelacional.contains(token))
+//            verificarSubRelacional(token);
+//
+        return "";
+    }
+
+    //sub verificações
+    public String verificarSubRelacional(String token)
+    {
+        if(token.equals(">")) return "t_maior";
+        if(token.equals(">=")) return "t_maiorIgual";
+        if(token.equals("<")) return "t_menor";
+        if(token.equals("<=")) return "t_menorIgual";
+        if(token.equals("==")) return "t_igual";
+        if(token.equals("!=")) return "t_diferente";
+
+        return "";
+    }
+
+    public boolean primeiroDigitoValido(char c)
+    {
+        if(c == '_')
+            return false;
+
+        return !(c >= 65 && c <= 90); //primeira letra é maiúscula
     }
 
     public Lexica()
