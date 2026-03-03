@@ -3,10 +3,13 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unoeste.compiladores.MainController">
+<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unoeste.compiladores.MainController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
@@ -26,6 +29,22 @@
         </MenuBar>
     </top>
     <center>
-        <StackPane fx:id="editor" BorderPane.alignment="CENTER" />
+        <StackPane fx:id="editor" prefHeight="431.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
     </center>
+   <bottom>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <left>
+            <TableView prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+              <columns>
+                <TableColumn prefWidth="75.0" text="Linha" />
+                <TableColumn prefWidth="75.0" text="Coluna" />
+                  <TableColumn prefWidth="249.0" text="Mensagem" />
+              </columns>
+            </TableView>
+         </left>
+         <right>
+            <FlowPane prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+   </bottom>
 </BorderPane>

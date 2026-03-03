@@ -91,7 +91,7 @@ public class MainController implements Initializable {
 
             linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
-                lexica.separaTokens(linha);
+                lexica.separarCadeias(linha);
             i++;
 
         }

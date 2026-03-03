@@ -31,25 +31,41 @@ public class Lexica
     }
 
     //separar os tokens
-    public void separaTokens(String linha)
+    public void separarCadeias(String linha)
     {
         int i = 0;
-        String palavara = "";
+        String cadeia = "";
         while (i < linha.length())
         {
             char c = linha.charAt(i);
             if (c != ' ')
-                palavara = palavara + c;
+            {
+                cadeia = cadeia + c;
+            }
             else
             {
-                System.out.println(palavara);
-                palavara = "";
+                separarTokens(cadeia);
+                cadeia = "";
             }
+
 
             i++;
         }
-        if (!palavara.isEmpty())
-            System.out.println(palavara);
+        if (!cadeia.isEmpty())
+        {
+            separarTokens(cadeia);
+        }
+    }
+    private void separarTokens(String cadeia)
+    {
+        int i = 0;
+        while (i < cadeia.length())
+        {
+
+
+
+            i++;
+        }
     }
 
     public Lexica()

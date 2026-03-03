@@ -10,6 +10,9 @@ public class Token {
         this.lexema = lexema;
     }
 
+    public Token() {
+    }
+
     public String getToken()
     {
         return token;
