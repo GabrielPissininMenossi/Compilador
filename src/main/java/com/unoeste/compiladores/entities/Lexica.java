@@ -1,14 +1,10 @@
 package com.unoeste.compiladores.entities;
 
-import com.unoeste.compiladores.MainController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.CodeArea;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,28 +45,30 @@ public class Lexica
             {
                 separarTokens(cadeia, posLinha, posColuna);
                 cadeia = "";
-
             }
-
-
             i++;
         }
         if (!cadeia.isEmpty())
-        {
             separarTokens(cadeia, posLinha, posColuna);
-        }
     }
     private void separarTokens(String cadeia, int posLinha, int posColuna)
     {
         int i = 0;
         String token = "";
         int inicioToken = 0;
+
         while (i < cadeia.length())
         {
             char c = cadeia.charAt(i);
 
             if(!letras.contains(c) && !numeros.contains(c))
             {
+                if (especiais.contains(c))
+                {
+                    Erro erro = new Erro(String.format("[ERRO LÉXICO] Caractere '%c' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna), posLinha, posColuna + i);
+                    erroList.add(erro);
+                }
+                else
                 if (!token.isEmpty()) // apos uma sequencia de letras e numeros
                 {
 
@@ -97,10 +95,8 @@ public class Lexica
             {
                 if(token.isEmpty() && !primeiroDigitoValido(c)) //token inválido -> marcar a linha
                 {
-
                     Erro erro = new Erro(String.format("[ERRO LÉXICO] Caractere '%c' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna), posLinha, posColuna + i);
                     erroList.add(erro);
-
                 }
                 else
                 {
@@ -112,10 +108,9 @@ public class Lexica
 
             i++;
         }
+
         if (!token.isEmpty())
-        {
             addToken(token, posLinha, posColuna + inicioToken);
-        }
     }
 
     public void limparListas()
@@ -135,21 +130,127 @@ public class Lexica
 
     private String verificarCategoria(String token)
     {
-        if(opRelacional.contains(token))
-            verificarSubRelacional(token);
 
-//        if(opRelacional.contains(token))
-//            verificarSubRelacional(token);
-//
-//        if(opRelacional.contains(token))
-//            verificarSubRelacional(token);
-//
-//        if(opRelacional.contains(token))
-//            verificarSubRelacional(token);
-//
+        if(opRelacional.contains(token))
+            return verificarSubRelacional(token);
+
+        if(comandosReservados.contains(token))
+            return verificarSubComandosReservados(token);
+
+        if(tipos.contains(token))
+            return verificarSubTipos(token);
+
+        if(opMatematicos.contains(token))
+            return verificarSubMatematicos(token);
+
+        if(unitarios.contains(token.charAt(0)))
+            return verificarSubUnitarios(token);
+
+        if(isNumero(token))
+            return "t_numero";
+
+        if(isIdentificador(token))
+            return "t_identificador";
+
+        // erros vao vir aq
+
         return "";
     }
 
+    private boolean isIdentificador(String token)
+    {
+        //primeiro dígito n pode ser número
+        if(numeros.contains(token.charAt(0)))
+            return false;
+
+        //primeiro digito n pode ser underline
+        if(token.charAt(0) == '_')
+            return false;
+
+        //n pode conter sinbolos especiais
+        for(int i=0; i<token.length(); i++)
+            if(especiais.contains(token.charAt(i)))
+                return false;
+
+        //se chegou aqui é valido
+        return true;
+    }
+
+    private boolean isNumero(String token)
+    {
+        int quantPonto = 0, quantNum=0;
+
+        for(int i=0; i<token.length(); i++)
+            if (token.charAt(i) == '.')
+                quantPonto++;
+
+        if(quantPonto > 1) //mais de um ponto
+            return false;
+
+        for(int i=0; i<token.length(); i++)
+            if(numeros.contains(token.charAt(i)))
+                quantNum++;
+
+        return quantNum == token.length()-quantPonto;
+    }
+
+    private String verificarSubUnitarios(String token)
+    {
+        if(token.equals("{")) return "t_abreChave";
+        if(token.equals("}")) return "t_fechaChave";
+        if(token.equals(",")) return "t_virgula";
+        if(token.equals("=")) return "t_igualAtribuicao";
+        if(token.equals(";")) return "t_pontoVirgula";
+        if(token.equals(".")) return "t_ponto";
+        if(token.equals("(")) return "t_abreParentese";
+        if(token.equals(")")) return "t_fechaParentese";
+
+        return "";
+    }
+
+    private String verificarSubMatematicos(String token)
+    {
+        if(token.equals("*")) return "t_multiplicacao";
+        if(token.equals("+")) return "t_adicao";
+        if(token.equals("-")) return "t_subtracao";
+        if(token.equals("/")) return "t_divisao";
+        if(token.equals("%")) return "t_resto";
+        if(token.equals("!")) return "t_negacao";
+
+        return "";
+    }
+
+    private String verificarSubTipos(String token)
+    {
+        if(token.equals("void")) return "t_void";
+        if(token.equals("char")) return "t_char";
+        if(token.equals("int")) return "t_int";
+        if(token.equals("float")) return "t_float";
+        if(token.equals("double")) return "t_double";
+
+        return "";
+    }
+
+    private String verificarSubComandosReservados(String token)
+    {
+        if(token.equals("while")) return "t_while";
+        if(token.equals("if")) return "t_if";
+        if(token.equals("else")) return "t_else";
+
+        return "";
+    }
+
+    private String verificarSubRelacional(String token)
+    {
+        if(token.equals(">")) return "t_maior";
+        if(token.equals(">=")) return "t_maiorIgual";
+        if(token.equals("<")) return "t_menor";
+        if(token.equals("<=")) return "t_menorIgual";
+        if(token.equals("==")) return "t_igualComparacao";
+        if(token.equals("!=")) return "t_diferente";
+
+        return "";
+    }
     public void exibirLogErro(CodeArea codeArea)
     {
         int i = 0;
@@ -175,24 +276,11 @@ public class Lexica
 
     }
     //sub verificações
-    private String verificarSubRelacional(String token)
-    {
-        if(token.equals(">")) return "t_maior";
-        if(token.equals(">=")) return "t_maiorIgual";
-        if(token.equals("<")) return "t_menor";
-        if(token.equals("<=")) return "t_menorIgual";
-        if(token.equals("==")) return "t_igual";
-        if(token.equals("!=")) return "t_diferente";
 
-        return "";
-    }
 
     private boolean primeiroDigitoValido(char c)
     {
-        if(c == '_')
-            return false;
-
-        return !(c >= 65 && c <= 90); //primeira letra é maiúscula
+        return !(c == '_');
     }
 
     public Lexica(ObservableList<Token> tabelaSucessos, TextArea textArea)
@@ -202,30 +290,9 @@ public class Lexica
         preencheListas();
     }
 
-    private boolean isLetra(Character character)
-    {
-        return letras.contains(character);
-    }
 
-    private boolean isNumero(Character character)
-    {
-        return numeros.contains(character);
-    }
 
-    private boolean isOpRelacional(String string)
-    {
-        return opRelacional.contains(string);
-    }
 
-    private boolean isComandosReservados(String string)
-    {
-        return comandosReservados.contains(string);
-    }
-
-    private boolean isOpMatematico(String string)
-    {
-        return opMatematicos.contains(string);
-    }
 
     private void preencheListas()
     {

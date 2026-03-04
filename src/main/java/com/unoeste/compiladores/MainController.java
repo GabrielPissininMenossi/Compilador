@@ -51,7 +51,7 @@ public class MainController implements Initializable {
         codeArea.setStyle("-fx-font-family: 'Consolas';" + "-fx-font-size: 16px;");
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         editor.getChildren().add(scrollPane);
-        textArea.setStyle("-fx-text-fill: red;");
+        textArea.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
         lexica = new Lexica(sucessos, textArea);
         tableView.setPlaceholder(new Label(""));
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
