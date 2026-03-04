@@ -7,5 +7,6 @@ module com.unoeste.compiladores {
 
 
     opens com.unoeste.compiladores to javafx.fxml;
+    opens com.unoeste.compiladores.entities;
     exports com.unoeste.compiladores;
 }

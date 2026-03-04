@@ -1,9 +1,17 @@
 package com.unoeste.compiladores.entities;
 
+import com.unoeste.compiladores.MainController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.CodeArea;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Lexica
@@ -15,38 +23,33 @@ public class Lexica
     private List<String> comandosReservados = new ArrayList<>(Arrays.asList("while", "if", "else"));
     private List<String> opMatematicos = new ArrayList<>(Arrays.asList("*", "+", "-", "/", "%", "!"));
     private List<Character> unitarios = new ArrayList<>(Arrays.asList('{', '}', ',', '=', ';', '.', '(', ')', '"'));
-    private List<Token> tokens = new ArrayList<>();
     private List<Character> especiais = new ArrayList<>(Arrays.asList('@', '#', '$'));
 
-    //exemplo de execução no main
-//    for(linha in linhas) // a partir do token, definir a cor
-//    {
-//        lexica.separaTokens(linha);
-//
-//    }
-//    lexica.getTokens()
+    private ObservableList<Token> tabelaSucessos;
+    private TextArea textArea;
 
-    public Token getToken(int pos)
-    {
-        return tokens.get(pos);
-    }
+    private List<Erro> erroList =  new ArrayList<>();
+    private List<Token> tokens = new ArrayList<>();
 
-    //separar os tokens
-    public void separarCadeias(String linha)
+    public void separarCadeias(String linha, int posLinha)
     {
         int i = 0;
         String cadeia = "";
+        int posColuna = 0;
         while (i < linha.length())
         {
             char c = linha.charAt(i);
             if (c != ' ')
             {
+                if (cadeia.isEmpty())
+                    posColuna = i + 1;
                 cadeia = cadeia + c;
             }
             else
             {
-                separarTokens(cadeia);
+                separarTokens(cadeia, posLinha, posColuna);
                 cadeia = "";
+
             }
 
 
@@ -54,27 +57,29 @@ public class Lexica
         }
         if (!cadeia.isEmpty())
         {
-            separarTokens(cadeia);
+            separarTokens(cadeia, posLinha, posColuna);
         }
     }
-    private void separarTokens(String cadeia)
+    private void separarTokens(String cadeia, int posLinha, int posColuna)
     {
         int i = 0;
         String token = "";
+        int inicioToken = 0;
         while (i < cadeia.length())
         {
             char c = cadeia.charAt(i);
 
             if(!letras.contains(c) && !numeros.contains(c))
             {
-                if (!token.isEmpty())
+                if (!token.isEmpty()) // apos uma sequencia de letras e numeros
                 {
+
                     // adiciona (funcao para validar token)
-                    addToken(token);
-                    System.out.println(token);
+                    addToken(token, posLinha, posColuna + inicioToken);
                     token = "";
 
                 }
+                inicioToken = i;
                 token += c;
 
                 // <= , >= , ==, !=
@@ -85,18 +90,22 @@ public class Lexica
 
                 }
                 // adiciona (funcao para validar token)
-                addToken(token);
-                System.out.println(token);
+                addToken(token, posLinha, posColuna + inicioToken);
                 token = "";
             }
             else
             {
                 if(token.isEmpty() && !primeiroDigitoValido(c)) //token inválido -> marcar a linha
                 {
-                    System.out.println("Caracter Invalido: "+c);
+
+                    Erro erro = new Erro(String.format("[ERRO LÉXICO] Caractere '%c' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna), posLinha, posColuna + i);
+                    erroList.add(erro);
+
                 }
                 else
                 {
+                    if (token.isEmpty())
+                        inicioToken = i;
                     token += c;
                 }
             }
@@ -105,18 +114,26 @@ public class Lexica
         }
         if (!token.isEmpty())
         {
-            addToken(token);
-            System.out.println(token); // adiciona (funcao para validar token)
+            addToken(token, posLinha, posColuna + inicioToken);
         }
     }
 
-    private void addToken(String token)
+    public void limparListas()
     {
-        Token novoToken = new Token(verificarCategoria(token), token);
+        textArea.clear();
+        tokens.clear();
+        erroList.clear();
+        tabelaSucessos.clear();
+    }
+    private void addToken(String token, int linha, int coluna)
+    {
+        Token novoToken = new Token(verificarCategoria(token), token, linha, coluna);
         tokens.add(novoToken);
+        tabelaSucessos.add(novoToken);
+
     }
 
-    public String verificarCategoria(String token)
+    private String verificarCategoria(String token)
     {
         if(opRelacional.contains(token))
             verificarSubRelacional(token);
@@ -133,8 +150,32 @@ public class Lexica
         return "";
     }
 
+    public void exibirLogErro(CodeArea codeArea)
+    {
+        int i = 0;
+        boolean flag = false;
+        while (i < erroList.size())
+        {
+            if (!flag)
+            {
+                codeArea.setParagraphStyle(erroList.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
+                codeArea.currentParagraphProperty().addListener(new ChangeListener<Integer>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Integer> observableValue, Integer integer, Integer t1) {
+                        if (!erroList.isEmpty())
+                            if (erroList.get(0).getLinha() - 1 == t1)
+                                codeArea.setParagraphStyle(erroList.get(0).getLinha() - 1, Collections.emptyList());
+                    }
+                });
+                flag = true;
+            }
+            textArea.appendText(erroList.get(i).getMensagem());
+            i++;
+        }
+
+    }
     //sub verificações
-    public String verificarSubRelacional(String token)
+    private String verificarSubRelacional(String token)
     {
         if(token.equals(">")) return "t_maior";
         if(token.equals(">=")) return "t_maiorIgual";
@@ -146,7 +187,7 @@ public class Lexica
         return "";
     }
 
-    public boolean primeiroDigitoValido(char c)
+    private boolean primeiroDigitoValido(char c)
     {
         if(c == '_')
             return false;
@@ -154,8 +195,10 @@ public class Lexica
         return !(c >= 65 && c <= 90); //primeira letra é maiúscula
     }
 
-    public Lexica()
+    public Lexica(ObservableList<Token> tabelaSucessos, TextArea textArea)
     {
+        this.tabelaSucessos = tabelaSucessos;
+        this.textArea = textArea;
         preencheListas();
     }
 
@@ -207,6 +250,7 @@ public class Lexica
         //adiciona o "underline" como uma exeção
         letras.add('_');
     }
+
 }
 
 

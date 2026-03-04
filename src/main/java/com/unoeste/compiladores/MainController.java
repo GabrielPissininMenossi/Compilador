@@ -1,10 +1,17 @@
 package com.unoeste.compiladores;
 
 import com.unoeste.compiladores.entities.Lexica;
+import com.unoeste.compiladores.entities.Token;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
@@ -20,12 +27,22 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
+    public TableView<Token> tableView;
+    public TableColumn<Token, String> colLexema;
+    public TableColumn<Token, String> colToken;
+    public TableColumn<Token, Integer> colLinha;
+    public TableColumn<Token, Integer> colColuna;
+    @FXML
+    public TextArea textArea;
     @FXML
     private StackPane editor;
 
     private CodeArea codeArea;
 
-    private Lexica lexica = new Lexica();
+    private ObservableList<Token> sucessos = FXCollections.observableArrayList();
+
+    private Lexica lexica;
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -34,6 +51,15 @@ public class MainController implements Initializable {
         codeArea.setStyle("-fx-font-family: 'Consolas';" + "-fx-font-size: 16px;");
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         editor.getChildren().add(scrollPane);
+        textArea.setStyle("-fx-text-fill: red;");
+        lexica = new Lexica(sucessos, textArea);
+        tableView.setPlaceholder(new Label(""));
+        colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
+        colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
+        colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
+        colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
+        tableView.setItems(sucessos);
+
     }
 
     public void onAbrir(ActionEvent actionEvent)
@@ -83,6 +109,7 @@ public class MainController implements Initializable {
 
     public void onAnalisarLexico(ActionEvent actionEvent)
     {
+        lexica.limparListas();
         int tamanhoTexto = ((java.util.List<?>) codeArea.getParagraphs()).size();
         int i = 0;
         String linha;
@@ -91,9 +118,11 @@ public class MainController implements Initializable {
 
             linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
-                lexica.separarCadeias(linha);
+                lexica.separarCadeias(linha, i + 1);
             i++;
 
         }
+
+        lexica.exibirLogErro(codeArea);
     }
 }
