@@ -33,10 +33,11 @@ public class Lexica
         this.textArea = textArea;
         preencheListas();
     }
+
     /**
      * O separarCadeias irá fazer um split pelos espaços em branco ' '
      * */
-    public void separarCadeias(String linha, int posLinha, boolean flag)
+    public void separarCadeias(String linha, int posLinha)
     {
         //apenas para identificar corretamente a coluna
         linha = linha.replaceAll("\t", "        ");
@@ -54,16 +55,16 @@ public class Lexica
             }
             else
             {
-                separarTokens(cadeia, posLinha, posColuna, flag);
+                separarTokens(cadeia, posLinha, posColuna);
                 cadeia = "";
             }
             i++;
         }
         if (!cadeia.isEmpty())
-            separarTokens(cadeia, posLinha, posColuna, flag);
+            separarTokens(cadeia, posLinha, posColuna);
     }
 
-    private void separarTokens(String cadeia, int posLinha, int posColuna, boolean flag)
+    private void separarTokens(String cadeia, int posLinha, int posColuna)
     {
         int i = 0;
         String token = "";
@@ -79,7 +80,7 @@ public class Lexica
                     token += c;
                 else
                 {
-                    addToken(token, posLinha, posColuna + inicioToken, flag);
+                    addToken(token, posLinha, posColuna + inicioToken);
                     token = "";
                     inicioToken = i;
                     token += c;
@@ -94,7 +95,7 @@ public class Lexica
                             i++;
                         }
                     }
-                    addToken(token, posLinha, posColuna + inicioToken, flag);
+                    addToken(token, posLinha, posColuna + inicioToken);
                     inicioToken = i;
                     token = "";
                 }
@@ -119,7 +120,7 @@ public class Lexica
         }
 
         if (!token.isEmpty())
-            addToken(token, posLinha, posColuna + inicioToken, flag); //(i - token.length())+1
+            addToken(token, posLinha, posColuna + inicioToken); //(i - token.length())+1
     }
 
     public void limparListas()
@@ -129,7 +130,8 @@ public class Lexica
         erroList.clear();
         tabelaSucessos.clear();
     }
-    private boolean addToken(String token, int linha, int coluna, boolean flag)
+
+    private boolean addToken(String token, int linha, int coluna)
     {
         if(token.isEmpty())
             return false;
@@ -140,8 +142,7 @@ public class Lexica
             // Add Tokens válidos
             Token novoToken = new Token(categoria, token, linha, coluna);
             tokens.add(novoToken);
-            if (flag)
-                tabelaSucessos.add(novoToken);
+            tabelaSucessos.add(novoToken);
             return true;
         }
         else
@@ -326,55 +327,77 @@ public class Lexica
         int i = 0;
         Token token;
         String categoria;
-        int tamanho = codeArea.getLength();
-        int linha, coluna, posInicial, posFinal;
+
+        //int tamanho = codeArea.getLength();
+        //int linha, coluna, posInicial, posFinal;
+
         while (i < tokens.size())
         {
              token = tokens.get(i);
              categoria = verificarColoracao(token.getToken());
-             linha = token.getLinha() - 1;
-             coluna = token.getColuna() - 1;
-             posInicial = codeArea.position(linha, coluna).toOffset();
-             posFinal = posInicial + token.getLexema().length();
-             if (posInicial >= 0 && posFinal <= tamanho)
-             {
-                 if (categoria.equals("palavra-reservada"))
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "palavra-reservada");
-                 }
-                 else
-                 if (categoria.equals("operador-relacional"))
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "operador-relacional");
-                 }
-                 else
-                 if (categoria.equals("numero"))
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "numero");
-                 }
-                 else
-                 if (categoria.equals("identificador"))
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "identificador");
-                 }
-                 else
-                 if (categoria.equals("operador-matematico"))
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "operador-matematico");
-                 }
-                 else
-                 {
-                     codeArea.setStyleClass(posInicial, posFinal, "unitarios");
-                 }
 
-             }
-
+             colorirToken(token, categoria, codeArea); //-> retirar restante do código logo abaixo
 
             i++;
         }
-
-
     }
+
+    public void colorirToken(Token token, String categoria, CodeArea codeArea)
+    {
+        // Pego a linha original do meu code area
+        String linha = codeArea.getParagraph(token.getLinha()-1).getText(); //pegar a linha original
+
+        // Calculo a incidência -> verificar quando possuo mais de 1 token igual na mesma linha
+        int coluna = indiceInicial(token, linha);
+
+        // Calculo a posicao inicial/final em relação ao codeArea
+        int posInicial = codeArea.position(token.getLinha()-1, coluna).toOffset();
+        int posFinal = codeArea.position(token.getLinha()-1, coluna+token.getLexema().length()).toOffset();
+
+        if (categoria.equals("palavra-reservada"))
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "palavra-reservada");
+        }
+        else
+        if (categoria.equals("operador-relacional"))
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "operador-relacional");
+        }
+        else
+        if (categoria.equals("numero"))
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "numero");
+        }
+        else
+        if (categoria.equals("identificador"))
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "identificador");
+        }
+        else
+        if (categoria.equals("operador-matematico"))
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "operador-matematico");
+        }
+        else
+        {
+            codeArea.setStyleClass(posInicial, posFinal, "unitarios");
+        }
+    }
+
+    public int indiceInicial(Token token, String linha)
+    {
+        int colunaRelativa = 0, i;
+        boolean flag = true;
+
+        for(i = 0; i < linha.length() && flag; i++, colunaRelativa++)
+            if(colunaRelativa == token.getColuna()-1)
+                flag = false;
+            else if(linha.charAt(i) == '\t')
+                colunaRelativa += 7;
+
+        return i-1;
+    }
+
     public void exibirLogErro(CodeArea codeArea)
     {
         int i = 0;

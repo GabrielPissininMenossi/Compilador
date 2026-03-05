@@ -1,0 +1,29 @@
+.erro-linha {
+    -fx-background-color:red;
+}
+.identificador {
+    -fx-fill: green;
+}
+
+.numero {
+    -fx-fill: purple;
+}
+.palavra-reservada {
+    -fx-fill: black;
+    -fx-font-weight: bold;
+}
+.operador-relacional {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+
+.operador-matematico {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+
+.unitarios {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
+

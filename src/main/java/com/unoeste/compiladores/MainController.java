@@ -43,10 +43,13 @@ public class MainController implements Initializable {
 
     private Lexica lexica;
 
+    private boolean claro = true;
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
         codeArea = new CodeArea();
+        //setarEstilo();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
         codeArea.setStyle("-fx-font-family: 'Courier New';" + "-fx-font-size: 16px;");
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
@@ -116,12 +119,19 @@ public class MainController implements Initializable {
         {
             linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
-                lexica.separarCadeias(linha, i + 1, true);
+                lexica.separarCadeias(linha, i + 1);
             i++;
-
         }
 
         lexica.coloracaoSintatica(codeArea);
         lexica.exibirLogErro(codeArea);
+    }
+
+    public void onClaro(ActionEvent actionEvent) {
+
+    }
+
+    public void onEscuro(ActionEvent actionEvent) {
+
     }
 }

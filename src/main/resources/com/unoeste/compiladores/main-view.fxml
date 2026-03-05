@@ -25,6 +25,12 @@
                 <MenuItem mnemonicParsing="false" onAction="#onAnalisarLexico" text="Analisar Léxico" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Aparência">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onClaro" text="Claro" />
+                  <MenuItem mnemonicParsing="false" onAction="#onEscuro" text="Escuro" />
+               </items>
+            </Menu>
             </menus>
         </MenuBar>
     </top>
