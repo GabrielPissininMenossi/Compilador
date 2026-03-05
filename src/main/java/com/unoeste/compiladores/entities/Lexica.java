@@ -445,7 +445,6 @@ public class Lexica
         //adiciona o "underline" como uma exeção
         letras.add('_');
     }
-
 }
 
 
