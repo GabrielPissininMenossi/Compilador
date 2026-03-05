@@ -2,27 +2,28 @@
     -fx-background-color:red;
 }
 .identificador {
-    -fx-fill: #24292e;
+    -fx-fill: black;
 }
 
 .numero {
-    -fx-fill: #098658;
+    -fx-fill: purple;
 }
-
-
+.palavra-reservada {
+    -fx-fill: black;
+    -fx-font-weight: bold;
+}
 .operador-relacional {
-    -fx-fill: #d73a49;
+    -fx-fill: red;
+    -fx-font-weight: bold;
 }
 
 .operador-matematico {
-    -fx-fill: #d73a49;
+    -fx-fill: red;
+    -fx-font-weight: bold;
 }
 
 .unitarios {
-    -fx-fill: #d73a49;
-}
-
-.palavra-reservada {
-    -fx-fill: #0000cc;
+    -fx-fill: red;
     -fx-font-weight: bold;
 }
+

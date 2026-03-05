@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -49,10 +48,9 @@ public class MainController implements Initializable {
     {
         codeArea = new CodeArea();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-        codeArea.setStyle("-fx-font-family: 'Consolas';" + "-fx-font-size: 16px;");
+        codeArea.setStyle("-fx-font-family: 'Courier New';" + "-fx-font-size: 16px;");
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         editor.getChildren().add(scrollPane);
-        codeArea.richChanges().filter(change -> !change.getInserted().equals(change.getRemoved())).successionEnds(Duration.ofMillis(100)).subscribe(change -> {analisarLexicoAutomatico();});
         textArea.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
         lexica = new Lexica(sucessos, textArea);
         tableView.setPlaceholder(new Label(""));
@@ -125,21 +123,5 @@ public class MainController implements Initializable {
 
         lexica.coloracaoSintatica(codeArea);
         lexica.exibirLogErro(codeArea);
-    }
-    public void analisarLexicoAutomatico()
-    {
-        lexica.limparTokens();
-        int tamanhoTexto = ((java.util.List<?>) codeArea.getParagraphs()).size();
-        int i = 0;
-        String linha;
-        while(i < tamanhoTexto)
-        {
-            linha = codeArea.getParagraph(i).getText();
-            if (!linha.isEmpty())
-                lexica.separarCadeias(linha, i + 1, false);
-            i++;
-
-        }
-        lexica.coloracaoSintatica(codeArea);
     }
 }

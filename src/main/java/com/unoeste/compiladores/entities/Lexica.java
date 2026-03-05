@@ -40,7 +40,6 @@ public class Lexica
     {
         //apenas para identificar corretamente a coluna
         linha = linha.replaceAll("\t", "        ");
-
         int i = 0;
         String cadeia = "";
         int posColuna = 0;
@@ -105,12 +104,16 @@ public class Lexica
                 /**
                  * Character inválido detectado
                  * */
-                token = "";
                 Erro erro = new Erro(String.format("[ERRO LÉXICO] Token '%s' inválido na linha %d, coluna %d.\n", token, posLinha, posColuna + i), posLinha, posColuna + i);
+                token = "";
                 erroList.add(erro);
             }
             else
+            {
+                if (token.isEmpty())
+                    inicioToken = i;
                 token += c;
+            }
 
             i++;
         }
@@ -125,10 +128,6 @@ public class Lexica
         tokens.clear();
         erroList.clear();
         tabelaSucessos.clear();
-    }
-    public void limparTokens()
-    {
-        tokens.clear();
     }
     private boolean addToken(String token, int linha, int coluna, boolean flag)
     {
@@ -327,6 +326,7 @@ public class Lexica
         int i = 0;
         Token token;
         String categoria;
+        int tamanho = codeArea.getLength();
         int linha, coluna, posInicial, posFinal;
         while (i < tokens.size())
         {
@@ -335,36 +335,40 @@ public class Lexica
              linha = token.getLinha() - 1;
              coluna = token.getColuna() - 1;
              posInicial = codeArea.position(linha, coluna).toOffset();
-             posFinal = codeArea.position(linha, coluna).toOffset() + token.getLexema().length();
+             posFinal = posInicial + token.getLexema().length();
+             if (posInicial >= 0 && posFinal <= tamanho)
+             {
+                 if (categoria.equals("palavra-reservada"))
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "palavra-reservada");
+                 }
+                 else
+                 if (categoria.equals("operador-relacional"))
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "operador-relacional");
+                 }
+                 else
+                 if (categoria.equals("numero"))
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "numero");
+                 }
+                 else
+                 if (categoria.equals("identificador"))
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "identificador");
+                 }
+                 else
+                 if (categoria.equals("operador-matematico"))
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "operador-matematico");
+                 }
+                 else
+                 {
+                     codeArea.setStyleClass(posInicial, posFinal, "unitarios");
+                 }
 
-             if (categoria.equals("palavra-reservada"))
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "palavra-reservada");
              }
-             else
-             if (categoria.equals("operador-relacional"))
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "operador-relacional");
-             }
-             else
-             if (categoria.equals("numero"))
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "numero");
-             }
-             else
-             if (categoria.equals("identificador"))
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "identificador");
-             }
-             else
-             if (categoria.equals("operador-matematico"))
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "operador-matematico");
-             }
-             else
-             {
-                 codeArea.setStyleClass(posInicial, posFinal, "unitarios");
-             }
+
 
             i++;
         }
