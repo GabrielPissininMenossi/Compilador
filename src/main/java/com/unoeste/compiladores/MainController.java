@@ -106,7 +106,6 @@ public class MainController implements Initializable {
         }
     }
 
-
     public void onAnalisarLexico(ActionEvent actionEvent)
     {
         lexica.limparListas();
@@ -115,7 +114,6 @@ public class MainController implements Initializable {
         String linha;
         while(i < tamanhoTexto)
         {
-
             linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
                 lexica.separarCadeias(linha, i + 1);
