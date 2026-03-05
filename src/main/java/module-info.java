@@ -2,6 +2,7 @@ module com.unoeste.compiladores {
     requires javafx.controls;
     requires javafx.fxml;
     requires org.fxmisc.richtext;
+    requires reactfx;
     requires org.fxmisc.flowless;
     requires java.sql;
 
