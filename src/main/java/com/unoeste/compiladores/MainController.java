@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -82,12 +83,15 @@ public class MainController implements Initializable {
 
         if(file != null)
         {
-            try{
+            try
+            {
                 //lê conteudo do arquivo
                 String conteudo = Files.readString(file.toPath());
 
                 codeArea.replaceText(conteudo);
-            }catch (IOException e){
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
         }
@@ -100,10 +104,13 @@ public class MainController implements Initializable {
         File file = fileChooser.showSaveDialog(editor.getScene().getWindow());
 
         if (file != null) {
-            try {
+            try
+            {
                 // Pega o texto atual do editor e grava no arquivo selecionado
                 Files.writeString(file.toPath(), codeArea.getText());
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
         }
@@ -123,8 +130,28 @@ public class MainController implements Initializable {
             i++;
         }
 
-        lexica.coloracaoSintatica(codeArea);
+        coloracaoSintatica(lexica.getTokens());
         lexica.exibirLogErro(codeArea);
+    }
+
+    public void coloracaoSintatica(List<Token> list_tokens)
+    {
+        int i = 0;
+        Token token;
+        String categoria;
+
+        while (i < list_tokens.size())
+        {
+            token = list_tokens.get(i);
+
+            //categoria = verificarColoracao(token.getToken());
+            categoria = token.verificarColoracaoToken();
+
+            //colorirToken(token, categoria, codeArea);
+            token.colorirToken(categoria, codeArea);
+
+            i++;
+        }
     }
 
     public void onClaro(ActionEvent actionEvent) {
