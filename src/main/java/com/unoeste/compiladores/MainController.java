@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -34,7 +36,7 @@ public class MainController implements Initializable {
     public TableColumn<Token, Integer> colLinha;
     public TableColumn<Token, Integer> colColuna;
     @FXML
-    public TextArea textArea;
+    public TextArea logErro;
     @FXML
     private StackPane editor;
 
@@ -50,20 +52,20 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources)
     {
         codeArea = new CodeArea();
-        //setarEstilo();
         codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-        codeArea.setStyle("-fx-font-family: 'Courier New';" + "-fx-font-size: 16px;");
+        //codeArea.setStyle("-fx-font-family: 'Courier New';" + "-fx-font-size: 16px;");
+        codeArea.getStyleClass().add("editor");
+        codeArea.getStyleClass().add("styled-text-area");
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         editor.getChildren().add(scrollPane);
-        textArea.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
-        lexica = new Lexica(sucessos, textArea);
+        logErro.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
+        lexica = new Lexica(sucessos, logErro);
         tableView.setPlaceholder(new Label(""));
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
         colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
         colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
         colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
         tableView.setItems(sucessos);
-
     }
 
     public void onAbrir(ActionEvent actionEvent)
@@ -144,10 +146,7 @@ public class MainController implements Initializable {
         {
             token = list_tokens.get(i);
 
-            //categoria = verificarColoracao(token.getToken());
             categoria = token.verificarColoracaoToken();
-
-            //colorirToken(token, categoria, codeArea);
             token.colorirToken(categoria, codeArea);
 
             i++;
@@ -155,10 +154,25 @@ public class MainController implements Initializable {
     }
 
     public void onClaro(ActionEvent actionEvent) {
-
+        Scene scene = editor.getScene();
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/claro.css")).toExternalForm());
+        claro = true;
+        mudarTema();
     }
 
     public void onEscuro(ActionEvent actionEvent) {
+        Scene scene = editor.getScene();
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/escuro.css")).toExternalForm());
+        claro = false;
+        mudarTema();
+    }
 
+    public void mudarTema(){
+        // Mudar o plano de fundo do editor de código
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        //codeArea.getStyleClass().add("code-area");
+        coloracaoSintatica(lexica.getTokens());
     }
 }

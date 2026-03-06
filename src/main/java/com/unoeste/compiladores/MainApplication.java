@@ -13,7 +13,6 @@ public class MainApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("main-view.fxml"));
 
         Scene scene = new Scene(fxmlLoader.load());
-        scene.getStylesheets().add(getClass().getResource("/css/claro.css").toExternalForm());
         scene.getStylesheets().add(getClass().getResource("/css/escuro.css").toExternalForm());
 
         //stage.setTitle("Compilador");

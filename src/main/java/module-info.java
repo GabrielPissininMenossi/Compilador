@@ -5,6 +5,7 @@ module com.unoeste.compiladores {
     requires reactfx;
     requires org.fxmisc.flowless;
     requires java.sql;
+    requires jdk.compiler;
 
 
     opens com.unoeste.compiladores to javafx.fxml;

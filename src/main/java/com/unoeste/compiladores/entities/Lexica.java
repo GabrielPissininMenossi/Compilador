@@ -23,12 +23,12 @@ public class Lexica
     private List<Erro> list_erro =  new ArrayList<>();
     private List<Token> list_tokens = new ArrayList<>();
     private ObservableList<Token> tabelaSucessos;
-    private TextArea textArea;
+    private TextArea logErro;
 
     public Lexica(ObservableList<Token> tabelaSucessos, TextArea textArea)
     {
         this.tabelaSucessos = tabelaSucessos;
-        this.textArea = textArea;
+        this.logErro = textArea;
         preencheListas();
     }
 
@@ -146,7 +146,7 @@ public class Lexica
 
     public void limparListas()
     {
-        textArea.clear();
+        logErro.clear();
         list_tokens.clear();
         list_erro.clear();
         tabelaSucessos.clear();
@@ -300,7 +300,7 @@ public class Lexica
                 });
                 flag = true;
             }
-            textArea.appendText(list_erro.get(i).getMensagem());
+            logErro.appendText(list_erro.get(i).getMensagem());
             i++;
         }
     }

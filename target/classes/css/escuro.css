@@ -1,28 +1,116 @@
-.erro-linha {
-    -fx-background-color:red;
+.default {
+    -fx-fill: white;
 }
+
+.editor {
+    -fx-font-family: "Courier New";
+    -fx-font-size: 16px;
+    -fx-fill: white;
+    -fx-background-color: #1e1e1e;
+}
+
+.erro-linha {
+    -fx-background-color: rgba(255, 0, 0, 0.37);
+}
+
 .identificador {
-    -fx-fill: green;
+    -fx-fill: #ffffff;
 }
 
 .numero {
-    -fx-fill: purple;
+    -fx-fill: #bf5ebf;
 }
 .palavra-reservada {
-    -fx-fill: black;
+    -fx-fill: rgba(15, 170, 147, 0.6);
     -fx-font-weight: bold;
 }
 .operador-relacional {
-    -fx-fill: red;
+    -fx-fill: #ffea00;
     -fx-font-weight: bold;
 }
 
 .operador-matematico {
-    -fx-fill: red;
+    -fx-fill: #ffea00;
     -fx-font-weight: bold;
 }
 
 .unitarios {
-    -fx-fill: red;
+    -fx-fill: #ffea00;
     -fx-font-weight: bold;
+}
+
+/* Fundo geral da aplicação */
+.root {
+    -fx-base: #1e1e1e;
+    -fx-background-color: #1e1e1e;
+}
+
+/* Editor (CodeArea) */
+.styled-text-area {
+    -fx-background-color: #1e1e1e;
+    -fx-fill: #d4d4d4;   /* cor padrão do texto digitado */
+    -fx-highlight-fill: #264f78;
+    -fx-caret-color: white;
+}
+
+.styled-text-area .text {
+    -fx-fill: white;
+}
+
+/* Fundo da área de parágrafos */
+.styled-text-area .paragraph-box {
+    -fx-background-color: #1e1e1e;
+}
+
+/* Números de linha */
+.lineno {
+    -fx-background-color: #252526;
+    -fx-fill: #858585;
+    -fx-padding: 0 10 0 10;
+}
+
+/* seleção de texto */
+.styled-text-area .selection {
+    -fx-fill: #264f78;
+}
+
+/* ScrollPane do editor */
+.virtualized-scroll-pane {
+    -fx-background-color: #1e1e1e;
+}
+
+/* TableView (tokens) */
+
+.table-view {
+    -fx-background-color: #1e1e1e;
+}
+
+.table-row-cell {
+    -fx-background-color: #1e1e1e;
+    -fx-fill: white;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #094771;
+}
+
+/* header da tabela */
+
+.table-view .column-header-background {
+    -fx-background-color: #2d2d2d;
+}
+
+.table-view .column-header {
+    -fx-background-color: #2d2d2d;
+}
+
+.table-view .label {
+    -fx-fill: white;
+}
+
+/* TextArea de log */
+
+.text-area {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-fill: #ff6b6b;
 }
