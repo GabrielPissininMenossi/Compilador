@@ -14,14 +14,18 @@ public class Lexica
 {
     private List<Character> list_numeros = new ArrayList<>(); //numeros válidos
     private List<Character> list_letras = new ArrayList<>();
+
     private List<String> list_opRelacional = new ArrayList<>(Arrays.asList("<", ">", "<=", ">=", "==", "!="));
     private List<String> list_tipos = new ArrayList<>(Arrays.asList("void", "char", "int", "float", "double"));
     private List<String> list_comandosReservados = new ArrayList<>(Arrays.asList("while", "if", "else", "return", "main"));
     private List<String> list_opMatematicos = new ArrayList<>(Arrays.asList("*", "+", "-", "/", "%", "!", "*=", "+=", "-=", "/=", "%="));
     private List<Character> list_unitarios = new ArrayList<>(Arrays.asList('{', '}', ',', '=', ';', '.', '(', ')'));
     private List<Character> list_especiais = new ArrayList<>(Arrays.asList('@', '#', '$'));
+
     private List<Erro> list_erro =  new ArrayList<>();
+
     private List<Token> list_tokens = new ArrayList<>();
+
     private ObservableList<Token> tabelaSucessos;
     private TextArea logErro;
 
@@ -35,7 +39,7 @@ public class Lexica
     /**
      * O separarCadeias irá fazer um split pelos espaços em branco ' '
      * */
-    public void separarCadeias(String linha, int posLinha)
+    public void separarCadeias(String linha, int posLinha, List<Token> destino)
     {
         //apenas para identificar corretamente a coluna
         linha = linha.replaceAll("\t", "        ");
@@ -53,16 +57,16 @@ public class Lexica
             }
             else
             {
-                separarTokens(cadeia, posLinha, posColuna);
+                separarTokens(cadeia, posLinha, posColuna, destino);
                 cadeia = "";
             }
             i++;
         }
         if (!cadeia.isEmpty())
-            separarTokens(cadeia, posLinha, posColuna);
+            separarTokens(cadeia, posLinha, posColuna, destino);
     }
 
-    private void separarTokens(String cadeia, int posLinha, int posColuna)
+    private void separarTokens(String cadeia, int posLinha, int posColuna, List<Token> destino)
     {
         int i = 0;
         String token = "";
@@ -78,7 +82,7 @@ public class Lexica
                     token += c;
                 else
                 {
-                    addToken(token, posLinha, posColuna + inicioToken);
+                    addToken(token, posLinha, posColuna + inicioToken, destino);
                     token = "";
                     inicioToken = i;
                     token += c;
@@ -93,7 +97,7 @@ public class Lexica
                             i++;
                         }
                     }
-                    addToken(token, posLinha, posColuna + inicioToken);
+                    addToken(token, posLinha, posColuna + inicioToken, destino);
                     inicioToken = i;
                     token = "";
                 }
@@ -118,10 +122,10 @@ public class Lexica
         }
 
         if (!token.isEmpty())
-            addToken(token, posLinha, posColuna + inicioToken); //(i - token.length())+1
+            addToken(token, posLinha, posColuna + inicioToken, destino); //(i - token.length())+1
     }
 
-    private boolean addToken(String token, int linha, int coluna)
+    private boolean addToken(String token, int linha, int coluna, List<Token> destino)
     {
         if(token.isEmpty())
             return false;
@@ -131,8 +135,11 @@ public class Lexica
         {
             // Add Tokens válidos
             Token novoToken = new Token(categoria, token, linha, coluna);
-            list_tokens.add(novoToken);
-            tabelaSucessos.add(novoToken);
+
+            destino.add(novoToken);
+            /*list_tokens.add(novoToken);
+            tabelaSucessos.add(novoToken);*/
+
             return true;
         }
         else
@@ -290,12 +297,16 @@ public class Lexica
             if (!flag)
             {
                 codeArea.setParagraphStyle(list_erro.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
-                codeArea.currentParagraphProperty().addListener(new ChangeListener<Integer>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Integer> observableValue, Integer integer, Integer t1) {
-                        if (!list_erro.isEmpty())
-                            if (list_erro.get(0).getLinha() - 1 == t1)
-                                codeArea.setParagraphStyle(list_erro.get(0).getLinha() - 1, Collections.emptyList());
+                codeArea.multiPlainChanges().subscribe(change -> {
+
+                    if (!list_erro.isEmpty()) {
+
+                        int linhaErro = list_erro.get(0).getLinha() - 1;
+                        int linhaAtual = codeArea.getCurrentParagraph();
+
+                        if (linhaErro == linhaAtual) {
+                            codeArea.setParagraphStyle(linhaErro, Collections.emptyList());
+                        }
                     }
                 });
                 flag = true;

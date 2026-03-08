@@ -24,9 +24,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainController implements Initializable {
 
@@ -48,6 +51,8 @@ public class MainController implements Initializable {
 
     private boolean claro = true;
 
+    List<Token> tokensColoracao = new ArrayList<>();
+
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
@@ -56,16 +61,24 @@ public class MainController implements Initializable {
         //codeArea.setStyle("-fx-font-family: 'Courier New';" + "-fx-font-size: 16px;");
         codeArea.getStyleClass().add("editor");
         codeArea.getStyleClass().add("styled-text-area");
+
         VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
         editor.getChildren().add(scrollPane);
+
         logErro.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
+
         lexica = new Lexica(sucessos, logErro);
+
         tableView.setPlaceholder(new Label(""));
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
         colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
         colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
         colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
-        tableView.setItems(sucessos);
+        //tableView.setItems(sucessos);
+
+        //chama função a cada alteração no codeArea
+        codeArea.multiPlainChanges()
+                .subscribe(change -> colorirEnquantoDigita());
     }
 
     public void onAbrir(ActionEvent actionEvent)
@@ -120,21 +133,42 @@ public class MainController implements Initializable {
 
     public void onAnalisarLexico(ActionEvent actionEvent)
     {
+        sucessos.clear();
         lexica.limparListas();
-        int tamanhoTexto = ((java.util.List<?>) codeArea.getParagraphs()).size();
+
+        int tamanhoTexto = codeArea.getParagraphs().size();
         int i = 0;
-        String linha;
         while(i < tamanhoTexto)
         {
-            linha = codeArea.getParagraph(i).getText();
+            String linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
-                lexica.separarCadeias(linha, i + 1);
+                lexica.separarCadeias(linha, i + 1, sucessos);
             i++;
         }
+        coloracaoSintatica(sucessos);
 
-        coloracaoSintatica(lexica.getTokens());
+        tableView.setItems(sucessos);// conecta tabela aos tokens
+
         lexica.exibirLogErro(codeArea);
     }
+
+    public void colorirEnquantoDigita()
+    {
+        tokensColoracao.clear();
+
+        int tamanhoTexto = codeArea.getParagraphs().size();
+
+        for(int i = 0; i < tamanhoTexto; i++)
+        {
+            String linha = codeArea.getParagraph(i).getText();
+
+            if(!linha.isEmpty())
+                lexica.separarCadeias(linha, i+1, tokensColoracao);
+        }
+
+        coloracaoSintatica(tokensColoracao);
+    }
+
 
     public void coloracaoSintatica(List<Token> list_tokens)
     {
