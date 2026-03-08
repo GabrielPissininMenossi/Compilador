@@ -104,7 +104,7 @@ public class Token {
     {
         if (this.token.equals("t_void")  || this.token.equals("t_char") || this.token.equals("t_int")
                 || this.token.equals("t_float") || this.token.equals("t_double") || this.token.equals("t_while")
-                || this.token.equals("t_if") || this.token.equals("else") || this.token.equals("return") || this.token.equals("main")) // palavras reservadas
+                || this.token.equals("t_if") || this.token.equals("t_else") || this.token.equals("t_return") || this.token.equals("t_main")) // palavras reservadas
         {
             return "palavra-reservada";
         }

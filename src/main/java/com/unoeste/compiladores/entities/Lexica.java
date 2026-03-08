@@ -137,8 +137,6 @@ public class Lexica
             Token novoToken = new Token(categoria, token, linha, coluna);
 
             destino.add(novoToken);
-            /*list_tokens.add(novoToken);
-            tabelaSucessos.add(novoToken);*/
 
             return true;
         }

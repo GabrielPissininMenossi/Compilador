@@ -191,6 +191,9 @@ public class MainController implements Initializable {
         Scene scene = editor.getScene();
         scene.getStylesheets().clear();
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/claro.css")).toExternalForm());
+
+        // Mudar o tableView
+        tableView.setStyle("-fx-text-background-color: black;");
         claro = true;
         mudarTema();
     }
@@ -199,6 +202,9 @@ public class MainController implements Initializable {
         Scene scene = editor.getScene();
         scene.getStylesheets().clear();
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/escuro.css")).toExternalForm());
+
+        // Mudar o tableView
+        tableView.setStyle("-fx-text-background-color: white;");
         claro = false;
         mudarTema();
     }

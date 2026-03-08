@@ -1,28 +1,104 @@
+/*.default {*/
+/*    -fx-fill: white;*/
+/*}*/
+
+/*.editor {*/
+/*    -fx-font-family: "Courier New";*/
+/*    -fx-font-size: 16px;*/
+/*    -fx-fill: black;*/
+/*    -fx-background-color: white;*/
+/*}*/
+
+/*.erro-linha {*/
+/*    -fx-background-color: rgba(255, 0, 0, 0.55);*/
+/*}*/
+
+/*.identificador {*/
+/*    -fx-fill: black;*/
+/*}*/
+
+/*.numero {*/
+/*    -fx-fill: purple;*/
+/*}*/
+
+/*.palavra-reservada {*/
+/*    -fx-fill: black;*/
+/*    -fx-font-weight: bold;*/
+/*}*/
+
+/*.operador-relacional {*/
+/*    -fx-fill: red;*/
+/*    -fx-font-weight: bold;*/
+/*}*/
+
+/*.operador-matematico {*/
+/*    -fx-fill: red;*/
+/*    -fx-font-weight: bold;*/
+/*}*/
+
+/*.unitarios {*/
+/*    -fx-fill: red;*/
+/*    -fx-font-weight: bold;*/
+/*}*/
+
+/*.code-area {*/
+/*    -fx-background-color: #f0f0f0;*/
+/*    -fx-fill: black;*/
+/*}*/
+
+/*.root {*/
+/*    -fx-base: white;*/
+/*    -fx-background-color: white;*/
+/*}*/
+
+/*.styled-text-area {*/
+/*    -fx-background-color: white;*/
+/*    -fx-fill: black;*/
+/*    -fx-highlight-fill: #cce8ff;*/
+/*}*/
+
+/*.lineno {*/
+/*    -fx-background-color: #f0f0f0;*/
+/*    -fx-fill: #555;*/
+/*}*/
+
+/*.table-view {*/
+/*    -fx-background-color: white;*/
+/*}*/
+
+/*.table-row-cell {*/
+/*    -fx-fill: black;*/
+/*}*/
+
 .default {
-    -fx-fill: white;
+    -fx-fill: black;
 }
 
 .editor {
     -fx-font-family: "Courier New";
     -fx-font-size: 16px;
-    -fx-fill: black;
     -fx-background-color: white;
 }
 
 .erro-linha {
     -fx-background-color: rgba(255, 0, 0, 0.55);
 }
+
+/* TOKENS */
+
 .identificador {
-    -fx-fill: green;
+    -fx-fill: black;
 }
 
 .numero {
     -fx-fill: purple;
 }
+
 .palavra-reservada {
     -fx-fill: black;
     -fx-font-weight: bold;
 }
+
 .operador-relacional {
     -fx-fill: red;
     -fx-font-weight: bold;
@@ -38,9 +114,10 @@
     -fx-font-weight: bold;
 }
 
+/* AREA DO EDITOR */
+
 .code-area {
     -fx-background-color: #f0f0f0;
-    -fx-fill: black;
 }
 
 .root {
@@ -50,24 +127,25 @@
 
 .styled-text-area {
     -fx-background-color: white;
-    -fx-fill: black;
-    -fx-highlight-fill: #cce8ff;
 }
+
+.styled-text-area .selection {
+    -fx-fill: #cce8ff;
+}
+
+/* NUMERO DAS LINHAS */
 
 .lineno {
     -fx-background-color: #f0f0f0;
-    -fx-fill: #555;
+    -fx-text-fill: #555;
 }
+
+/* TABLE VIEW */
 
 .table-view {
     -fx-background-color: white;
 }
 
 .table-row-cell {
-    -fx-fill: black;
-}
-
-.text-area {
-    -fx-control-inner-background: white;
-    -fx-fill: red;
+    -fx-text-fill: black;
 }

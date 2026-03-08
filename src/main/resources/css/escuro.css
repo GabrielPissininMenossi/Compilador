@@ -18,24 +18,26 @@
 }
 
 .numero {
-    -fx-fill: #bf5ebf;
+    -fx-fill: #509E3E;
 }
+
 .palavra-reservada {
-    -fx-fill: rgba(15, 170, 147, 0.6);
+    -fx-fill: #219397;
     -fx-font-weight: bold;
 }
+
 .operador-relacional {
-    -fx-fill: #ffea00;
+    -fx-fill: #D9E9A9;
     -fx-font-weight: bold;
 }
 
 .operador-matematico {
-    -fx-fill: #ffea00;
+    -fx-fill: #D9E9A9;
     -fx-font-weight: bold;
 }
 
 .unitarios {
-    -fx-fill: #ffea00;
+    -fx-fill: #D9E9A9;
     -fx-font-weight: bold;
 }
 
@@ -49,12 +51,15 @@
 .styled-text-area {
     -fx-background-color: #1e1e1e;
     -fx-fill: #d4d4d4;   /* cor padrão do texto digitado */
-    -fx-highlight-fill: #264f78;
-    -fx-caret-color: white;
+
 }
 
-.styled-text-area .text {
-    -fx-fill: white;
+.styled-text-area .caret{
+    -fx-stroke: white;
+}
+
+.styled-text-area .selection {
+    -fx-fill: yellow;
 }
 
 /* Fundo da área de parágrafos */
@@ -69,18 +74,12 @@
     -fx-padding: 0 10 0 10;
 }
 
-/* seleção de texto */
-.styled-text-area .selection {
-    -fx-fill: #264f78;
-}
-
 /* ScrollPane do editor */
 .virtualized-scroll-pane {
     -fx-background-color: #1e1e1e;
 }
 
 /* TableView (tokens) */
-
 .table-view {
     -fx-background-color: #1e1e1e;
 }
@@ -95,7 +94,6 @@
 }
 
 /* header da tabela */
-
 .table-view .column-header-background {
     -fx-background-color: #2d2d2d;
 }
@@ -109,7 +107,6 @@
 }
 
 /* TextArea de log */
-
 .text-area {
     -fx-control-inner-background: #1e1e1e;
     -fx-fill: #ff6b6b;
