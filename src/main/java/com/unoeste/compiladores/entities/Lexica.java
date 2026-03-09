@@ -288,7 +288,13 @@ public class Lexica
 
         return "";
     }
-
+    private String verificarSubCadeiaCaracteres(String token)
+    {
+        if (token.contains("'"))
+            return "t_cadeiaCaracterChar";
+        else
+            return "t_cadeiaCaracterString";
+    }
     private String verificarCategoria(String token)
     {
         if(list_opRelacional.contains(token))
@@ -306,11 +312,11 @@ public class Lexica
         if(token.length() == 1 && list_unitarios.contains(token.charAt(0)))
             return verificarSubUnitarios(token);
 
+        if(isCadeiaCaracter(token))
+            return verificarSubCadeiaCaracteres(token);
+
         if(isNumero(token))
             return "t_numero";
-
-        if(isCadeiaCaracter(token))
-            return "t_cadeiaCaracter";
 
         if(isIdentificador(token))
             return "t_identificador";

@@ -135,7 +135,7 @@ public class Token {
             return "operador-matematico";
         }
         else
-        if (this.token.equals("t_cadeiaCaracter"))
+        if (this.token.equals("t_cadeiaCaracterString") || this.token.equals("t_cadeiaCaracterChar"))
             return "cadeia-caracteres";
         else
         {
