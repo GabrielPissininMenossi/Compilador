@@ -96,6 +96,9 @@ public class Token {
         if (categoria.equals("operador-matematico"))
             codeArea.setStyleClass(posInicial, posFinal, "operador-matematico");
         else
+        if (categoria.equals("cadeia-caracteres"))
+            codeArea.setStyleClass(posInicial, posFinal, "cadeia-caracteres");
+        else
             codeArea.setStyleClass(posInicial, posFinal, "unitarios");
     }
 
@@ -131,6 +134,9 @@ public class Token {
         {
             return "operador-matematico";
         }
+        else
+        if (this.token.equals("t_cadeiaCaracter"))
+            return "cadeia-caracteres";
         else
         {
             return "unitarios";

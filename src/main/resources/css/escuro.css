@@ -40,7 +40,10 @@
     -fx-fill: #D9E9A9;
     -fx-font-weight: bold;
 }
-
+.cadeia-caracteres {
+    -fx-fill: yellow;
+    -fx-font-weight: bold;
+}
 .root {
     -fx-base: #1e1e1e;
     -fx-background-color: #1e1e1e;
@@ -57,7 +60,7 @@
 }
 
 .styled-text-area .selection {
-    -fx-fill: yellow;
+    -fx-fill: #787878;
 }
 
 .styled-text-area .paragraph-box {

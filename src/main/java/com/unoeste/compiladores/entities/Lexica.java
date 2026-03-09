@@ -46,17 +46,43 @@ public class Lexica
         while (i < linha.length())
         {
             char c = linha.charAt(i);
+
             if (c != ' ')
             {
+                if (c == '"')
+                {
+                    if (!cadeia.isEmpty())
+                    {
+                        separarTokens(cadeia, posLinha, posColuna, destino);
+                        cadeia = "";
+                    }
+                    i = cadeiaCaracterString(linha, i, posLinha, posColuna, destino);
+                }
+                else
+                if (c == '\'')
+                {
+                    if (!cadeia.isEmpty())
+                    {
+                        separarTokens(cadeia, posLinha, posColuna, destino);
+                        cadeia = "";
+                    }
+                    i = cadeiaCaracterChar(linha, i, posLinha, posColuna, destino);
+                }
                 if (cadeia.isEmpty())
                     posColuna = i + 1;
-                cadeia = cadeia + c;
+
+                if(i < linha.length())
+                    if(i-1>0 && (linha.charAt(i) == '"' || linha.charAt(i) == '\''))
+                        cadeia = "";
+                    else
+                        cadeia += c;
             }
             else
             {
                 separarTokens(cadeia, posLinha, posColuna, destino);
                 cadeia = "";
             }
+
             i++;
         }
         if (!cadeia.isEmpty())
@@ -128,7 +154,44 @@ public class Lexica
         if (!token.isEmpty())
             addToken(token, posLinha, posColuna + inicioToken, destino); //(i - token.length())+1
     }
+    private int cadeiaCaracterString(String linha, int i, int posLinha, int posColuna, List<Token> destino)
+    {
 
+        int ini = i + 1;
+        while (ini < linha.length() && linha.charAt(ini) != '"')
+            ini++;
+        if (ini == linha.length()) // nao achou, erro
+        {
+            Erro erro = new Erro(String.format("[ERRO LÉXICO] Cadeia de caracteres não formada na linha %d.\n",posLinha), posLinha, posColuna + i);
+            list_erro.add(erro);
+        }
+        else
+        {
+            String token = linha.substring(i, ini + 1);
+            addToken(token, posLinha, (ini+2)-token.length(), destino);
+            i = ini;
+        }
+        return i;
+    }
+
+    private int cadeiaCaracterChar(String linha, int i, int posLinha, int posColuna, List<Token> destino)
+    {
+        int ini = i + 1;
+        while (ini < linha.length() && linha.charAt(ini) != '\'')
+            ini++;
+        if (ini == linha.length()) // nao achou, erro
+        {
+            Erro erro = new Erro(String.format("[ERRO LÉXICO] Cadeia de caracteres não formada na linha %d.\n",posLinha), posLinha, posColuna + i);
+            list_erro.add(erro);
+        }
+        else
+        {
+            String token = linha.substring(i, ini + 1);
+            addToken(token, posLinha, (ini+2)-token.length(), destino);
+            i = ini;
+        }
+        return i;
+    }
     private boolean addToken(String token, int linha, int coluna, List<Token> destino)
     {
         if(token.isEmpty())
@@ -246,11 +309,20 @@ public class Lexica
         if(isNumero(token))
             return "t_numero";
 
+        if(isCadeiaCaracter(token))
+            return "t_cadeiaCaracter";
+
         if(isIdentificador(token))
             return "t_identificador";
 
+
         // Todos os tokens que retornam vazios, são tokens inválidos
         return "";
+    }
+
+    private boolean isCadeiaCaracter(String token)
+    {
+        return (token.charAt(0) == '"' && token.charAt(token.length() - 1) == '"') || (token.charAt(0) == '\'' && token.charAt(token.length() - 1) == '\'');
     }
 
     private boolean isIdentificador(String token)

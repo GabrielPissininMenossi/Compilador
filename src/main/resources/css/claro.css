@@ -40,6 +40,11 @@
     -fx-font-weight: bold;
 }
 
+.cadeia-caracteres {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+
 .code-area {
     -fx-background-color: #f0f0f0;
 }
