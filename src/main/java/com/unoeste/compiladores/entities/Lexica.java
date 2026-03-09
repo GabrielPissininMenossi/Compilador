@@ -290,10 +290,12 @@ public class Lexica
     }
     private String verificarSubCadeiaCaracteres(String token)
     {
-        if (token.contains("'"))
+        if (token.contains("'") && token.length() < 4)
             return "t_cadeiaCaracterChar";
         else
+        if (token.contains("\""))
             return "t_cadeiaCaracterString";
+        return "";
     }
     private String verificarCategoria(String token)
     {
