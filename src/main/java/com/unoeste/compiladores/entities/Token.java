@@ -1,5 +1,4 @@
 package com.unoeste.compiladores.entities;
-
 import org.fxmisc.richtext.CodeArea;
 
 public class Token {

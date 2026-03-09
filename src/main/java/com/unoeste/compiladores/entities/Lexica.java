@@ -1,7 +1,4 @@
 package com.unoeste.compiladores.entities;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TextArea;
 import org.fxmisc.richtext.CodeArea;
@@ -80,6 +77,13 @@ public class Lexica
             {
                 if(c == '.' && isNumero(token))
                     token += c;
+                else
+                if (c == ',' && isNumero(token))
+                {
+                    Erro erro = new Erro(String.format("[ERRO LÉXICO] Token '%s' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna + i), posLinha, posColuna + i);
+                    token = "";
+                    list_erro.add(erro);
+                }
                 else
                 {
                     addToken(token, posLinha, posColuna + inicioToken, destino);
@@ -270,20 +274,24 @@ public class Lexica
 
     private boolean isNumero(String token)
     {
-        int quantPonto = 0, quantNum=0;
+        if (!token.isEmpty())
+        {
+            int quantPonto = 0, quantNum=0;
 
-        for(int i=0; i<token.length(); i++)
-            if (token.charAt(i) == '.')
-                quantPonto++;
+            for(int i=0; i<token.length(); i++)
+                if (token.charAt(i) == '.')
+                    quantPonto++;
 
-        if(quantPonto > 1) //mais de um ponto
-            return false;
+            if(quantPonto > 1) //mais de um ponto
+                return false;
 
-        for(int i=0; i<token.length(); i++)
-            if(list_numeros.contains(token.charAt(i)))
-                quantNum++;
+            for(int i=0; i<token.length(); i++)
+                if(list_numeros.contains(token.charAt(i)))
+                    quantNum++;
 
-        return quantNum == token.length()-quantPonto;
+            return quantNum == token.length()-quantPonto;
+        }
+        return false;
     }
 
     public void exibirLogErro(CodeArea codeArea)

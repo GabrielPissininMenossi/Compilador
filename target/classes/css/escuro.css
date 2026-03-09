@@ -41,13 +41,11 @@
     -fx-font-weight: bold;
 }
 
-/* Fundo geral da aplicação */
 .root {
     -fx-base: #1e1e1e;
     -fx-background-color: #1e1e1e;
 }
 
-/* Editor (CodeArea) */
 .styled-text-area {
     -fx-background-color: #1e1e1e;
     -fx-fill: #d4d4d4;   /* cor padrão do texto digitado */
@@ -62,24 +60,20 @@
     -fx-fill: yellow;
 }
 
-/* Fundo da área de parágrafos */
 .styled-text-area .paragraph-box {
     -fx-background-color: #1e1e1e;
 }
 
-/* Números de linha */
 .lineno {
     -fx-background-color: #252526;
     -fx-fill: #858585;
     -fx-padding: 0 10 0 10;
 }
 
-/* ScrollPane do editor */
 .virtualized-scroll-pane {
     -fx-background-color: #1e1e1e;
 }
 
-/* TableView (tokens) */
 .table-view {
     -fx-background-color: #1e1e1e;
 }
@@ -93,7 +87,6 @@
     -fx-background-color: #094771;
 }
 
-/* header da tabela */
 .table-view .column-header-background {
     -fx-background-color: #2d2d2d;
 }
@@ -106,7 +99,6 @@
     -fx-fill: white;
 }
 
-/* TextArea de log */
 .text-area {
     -fx-control-inner-background: #1e1e1e;
     -fx-fill: #ff6b6b;

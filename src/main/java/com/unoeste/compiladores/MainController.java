@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainController implements Initializable {
 
@@ -77,8 +75,7 @@ public class MainController implements Initializable {
         //tableView.setItems(sucessos);
 
         //chama função a cada alteração no codeArea
-        codeArea.multiPlainChanges()
-                .subscribe(change -> colorirEnquantoDigita());
+        codeArea.multiPlainChanges().subscribe(change -> colorirEnquantoDigita());
     }
 
     public void onAbrir(ActionEvent actionEvent)
