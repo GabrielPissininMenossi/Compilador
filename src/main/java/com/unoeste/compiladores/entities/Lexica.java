@@ -104,7 +104,7 @@ public class Lexica
                 if(c == '.' && isNumero(token))
                     token += c;
                 else
-                if (c == ',' && isNumero(token))
+                if (c == ',' && isNumero(token) && i+1 < cadeia.length() && isDigito(cadeia.charAt(i + 1)))
                 {
                     Erro erro = new Erro(String.format("[ERRO LÉXICO] Token '%s' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna + i), posLinha, posColuna + i);
                     token = "";
@@ -371,7 +371,10 @@ public class Lexica
         }
         return false;
     }
-
+    private boolean isDigito(Character c)
+    {
+        return list_numeros.contains(c);
+    }
     public void exibirLogErro(CodeArea codeArea)
     {
         int i = 0;
