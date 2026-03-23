@@ -1,14 +1,20 @@
 package com.unoeste.compiladores.entities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TabelaSintatica
 {
-    List<NaoTerminal> listNaoTerminal = new ArrayList<>();
+    private NaoTerminal programa = new NaoTerminal("programa");
+    private NaoTerminal comando = new NaoTerminal("comando");
+    private NaoTerminal bloco = new NaoTerminal("bloco");
+    private NaoTerminal declaracaoVariavel = new NaoTerminal("declaracaoVariavel");
+
+    private List<Elemento> producaoPrograma = new ArrayList<>(Arrays.asList(comando));
+
 
     public TabelaSintatica(List<NaoTerminal> listNaoTerminal) {
-        this.listNaoTerminal = listNaoTerminal;
 
         criarEBNF();
     }
@@ -17,7 +23,7 @@ public class TabelaSintatica
     {
         List<Elemento> letras = new ArrayList<>();
         criarLetras(letras);
-        NaoTerminal letra = new NaoTerminal("letra", letras);
+        //NaoTerminal letra = new NaoTerminal("letra", letras);
         //letra = “a” | ... | “z” | “A” | ... | “Z”
     }
 
