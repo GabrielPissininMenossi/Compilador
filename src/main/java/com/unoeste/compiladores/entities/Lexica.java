@@ -26,10 +26,10 @@ public class Lexica
     private ObservableList<Token> tabelaSucessos;
     private TextArea logErro;
 
-    public Lexica(ObservableList<Token> tabelaSucessos, TextArea textArea)
+    public Lexica(ObservableList<Token> tabelaSucessos, List<Erro> list_erro)
     {
         this.tabelaSucessos = tabelaSucessos;
-        this.logErro = textArea;
+        this.list_erro = list_erro;
         preencheListas();
     }
 
@@ -202,7 +202,7 @@ public class Lexica
         {
             // Add Tokens válidos
             Token novoToken = new Token(categoria, token, linha, coluna);
-
+            list_tokens.add(novoToken);
             destino.add(novoToken);
 
             return true;
@@ -218,7 +218,6 @@ public class Lexica
 
     public void limparListas()
     {
-        logErro.clear();
         list_tokens.clear();
         list_erro.clear();
         tabelaSucessos.clear();
@@ -377,33 +376,7 @@ public class Lexica
     {
         return list_numeros.contains(c);
     }
-    public void exibirLogErro(CodeArea codeArea)
-    {
-        int i = 0;
-        boolean flag = false;
-        while (i < list_erro.size())
-        {
-            if (!flag)
-            {
-                codeArea.setParagraphStyle(list_erro.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
-                codeArea.multiPlainChanges().subscribe(change -> {
 
-                    if (!list_erro.isEmpty()) {
-
-                        int linhaErro = list_erro.get(0).getLinha() - 1;
-                        int linhaAtual = codeArea.getCurrentParagraph();
-
-                        if (linhaErro == linhaAtual) {
-                            codeArea.setParagraphStyle(linhaErro, Collections.emptyList());
-                        }
-                    }
-                });
-                flag = true;
-            }
-            logErro.appendText(list_erro.get(i).getMensagem());
-            i++;
-        }
-    }
 
     private void preencheListas()
     {
@@ -432,7 +405,9 @@ public class Lexica
 
     public Token getToken(int pos)
     {
-        return list_tokens.get(pos);
+        if (pos < list_tokens.size())
+            return list_tokens.get(pos);
+        return null;
     }
 
     public List<Token> getTokens()

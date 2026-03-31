@@ -1,6 +1,8 @@
 package com.unoeste.compiladores;
 
+import com.unoeste.compiladores.entities.Erro;
 import com.unoeste.compiladores.entities.Lexica;
+import com.unoeste.compiladores.entities.Sintatico;
 import com.unoeste.compiladores.entities.Token;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,10 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
 
@@ -50,6 +49,7 @@ public class MainController implements Initializable {
     private boolean claro = true;
 
     List<Token> tokensColoracao = new ArrayList<>();
+    private List<Erro> erroList = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources)
@@ -65,7 +65,7 @@ public class MainController implements Initializable {
 
         logErro.setStyle("-fx-text-fill: red;" + "-fx-font-size: 12px;");
 
-        lexica = new Lexica(sucessos, logErro);
+        lexica = new Lexica(sucessos, erroList);
 
         tableView.setPlaceholder(new Label(""));
         colToken.setCellValueFactory(new PropertyValueFactory<>("token"));
@@ -132,6 +132,7 @@ public class MainController implements Initializable {
     {
         sucessos.clear();
         lexica.limparListas();
+        logErro.clear();
 
         int tamanhoTexto = codeArea.getParagraphs().size();
         int i = 0;
@@ -146,9 +147,38 @@ public class MainController implements Initializable {
 
         tableView.setItems(sucessos);// conecta tabela aos tokens
 
-        lexica.exibirLogErro(codeArea);
-    }
+        Sintatico sintatico = new Sintatico(lexica, erroList);
+        sintatico.analisarSintatico();
 
+        exibirLogErro(codeArea);
+    }
+    public void exibirLogErro(CodeArea codeArea)
+    {
+        int i = 0;
+        boolean flag = false;
+        while (i < erroList.size())
+        {
+            if (!flag)
+            {
+                codeArea.setParagraphStyle(erroList.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
+                codeArea.multiPlainChanges().subscribe(change -> {
+
+                    if (!erroList.isEmpty()) {
+
+                        int linhaErro = erroList.get(0).getLinha() - 1;
+                        int linhaAtual = codeArea.getCurrentParagraph();
+
+                        if (linhaErro == linhaAtual) {
+                            codeArea.setParagraphStyle(linhaErro, Collections.emptyList());
+                        }
+                    }
+                });
+                flag = true;
+            }
+            logErro.appendText(erroList.get(i).getMensagem());
+            i++;
+        }
+    }
     public void colorirEnquantoDigita()
     {
         tokensColoracao.clear();
