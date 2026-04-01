@@ -40,17 +40,17 @@
    <bottom>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <left>
-            <TableView fx:id="tableView" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+            <TableView fx:id="tableView" prefWidth="400.0" BorderPane.alignment="CENTER">
               <columns>
-                <TableColumn fx:id="colLexema" editable="false" prefWidth="92.0" resizable="false" sortable="false" text="Lexema" />
-                <TableColumn fx:id="colToken" editable="false" prefWidth="133.0" resizable="false" sortable="false" text="Token" />
-                  <TableColumn fx:id="colLinha" editable="false" prefWidth="94.0" resizable="false" sortable="false" text="Linha" />
-                  <TableColumn fx:id="colColuna" editable="false" prefWidth="79.0" resizable="false" sortable="false" text="Coluna" />
+                <TableColumn fx:id="colLexema" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Lexema" />
+                <TableColumn fx:id="colToken" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Token" />
+                  <TableColumn fx:id="colLinha" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Linha" />
+                  <TableColumn fx:id="colColuna" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Coluna" />
               </columns>
             </TableView>
          </left>
          <right>
-            <TextArea fx:id="logErro" editable="false" prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER" />
+            <TextArea fx:id="logErro" editable="false" prefWidth="460.0" BorderPane.alignment="CENTER" />
          </right>
       </BorderPane>
    </bottom>

@@ -39,7 +39,10 @@
     -fx-fill: red;
     -fx-font-weight: bold;
 }
-
+.termo-logico {
+    -fx-fill: red;
+    -fx-font-weight: bold;
+}
 .cadeia-caracteres {
     -fx-fill: blue;
     -fx-font-weight: bold;

@@ -40,6 +40,10 @@
     -fx-fill: #D9E9A9;
     -fx-font-weight: bold;
 }
+.termo-logico {
+    -fx-fill: #D9E9A9;
+    -fx-font-weight: bold;
+}
 .cadeia-caracteres {
     -fx-fill: yellow;
     -fx-font-weight: bold;
