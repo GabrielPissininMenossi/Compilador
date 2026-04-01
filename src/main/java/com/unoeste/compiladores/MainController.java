@@ -136,13 +136,20 @@ public class MainController implements Initializable {
 
         int tamanhoTexto = codeArea.getParagraphs().size();
         int i = 0;
+        int posLinha = 1, posColuna = 1;
         while(i < tamanhoTexto)
         {
             String linha = codeArea.getParagraph(i).getText();
             if (!linha.isEmpty())
-                lexica.separarCadeias(linha, i + 1, sucessos);
+            {
+                posColuna = lexica.separarCadeias(linha, i + 1, sucessos);
+                posLinha = i + 1;
+            }
             i++;
         }
+
+        Token ultimoToken = new Token("$", "EOF", posLinha, posColuna);
+        lexica.getTokens().add(ultimoToken);
         coloracaoSintatica(sucessos);
 
         tableView.setItems(sucessos);// conecta tabela aos tokens

@@ -1,10 +1,8 @@
 package com.unoeste.compiladores.entities;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TextArea;
-import org.fxmisc.richtext.CodeArea;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Lexica
@@ -36,13 +34,14 @@ public class Lexica
     /**
      * O separarCadeias irá fazer um split pelos espaços em branco ' '
      * */
-    public void separarCadeias(String linha, int posLinha, List<Token> destino)
+    public int separarCadeias(String linha, int posLinha, List<Token> destino)
     {
         //apenas para identificar corretamente a coluna
         linha = linha.replaceAll("\t", "        ");
         int i = 0;
         String cadeia = "";
         int posColuna = 0;
+        int inicioToken = 0;
         while (i < linha.length())
         {
             char c = linha.charAt(i);
@@ -53,7 +52,7 @@ public class Lexica
                 {
                     if (!cadeia.isEmpty())
                     {
-                        separarTokens(cadeia, posLinha, posColuna, destino);
+                        inicioToken = separarTokens(cadeia, posLinha, posColuna, destino);
                         cadeia = "";
                     }
                     i = cadeiaCaracterString(linha, i, posLinha, posColuna, destino);
@@ -63,7 +62,7 @@ public class Lexica
                 {
                     if (!cadeia.isEmpty())
                     {
-                        separarTokens(cadeia, posLinha, posColuna, destino);
+                        inicioToken = separarTokens(cadeia, posLinha, posColuna, destino);
                         cadeia = "";
                     }
                     i = cadeiaCaracterChar(linha, i, posLinha, posColuna, destino);
@@ -79,17 +78,19 @@ public class Lexica
             }
             else
             {
-                separarTokens(cadeia, posLinha, posColuna, destino);
+                inicioToken = separarTokens(cadeia, posLinha, posColuna, destino);
                 cadeia = "";
             }
 
             i++;
         }
         if (!cadeia.isEmpty())
-            separarTokens(cadeia, posLinha, posColuna, destino);
+            inicioToken = separarTokens(cadeia, posLinha, posColuna, destino);
+
+        return inicioToken + posColuna;
     }
 
-    private void separarTokens(String cadeia, int posLinha, int posColuna, List<Token> destino)
+    private int separarTokens(String cadeia, int posLinha, int posColuna, List<Token> destino)
     {
         int i = 0;
         String token = "";
@@ -127,6 +128,36 @@ public class Lexica
                             i++;
                         }
                     }
+                    else
+                    if (c == '&')
+                    {
+                        if (i + 1 < cadeia.length() && cadeia.charAt(i+1) == '&')
+                        {
+                            token += cadeia.charAt(i+1);
+                            i++;
+                        }
+                        else
+                        {
+                            Erro erro = new Erro(String.format("[ERRO LÉXICO] Token '%s' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna + i), posLinha, posColuna + i);
+                            token = "";
+                            list_erro.add(erro);
+                        }
+                    }
+                    else
+                    if (c == '|')
+                    {
+                        if (i + 1 < cadeia.length() && cadeia.charAt(i+1) == '|')
+                        {
+                            token += cadeia.charAt(i+1);
+                            i++;
+                        }
+                        else
+                        {
+                            Erro erro = new Erro(String.format("[ERRO LÉXICO] Token '%s' inválido na linha %d, coluna %d.\n", c, posLinha, posColuna + i), posLinha, posColuna + i);
+                            token = "";
+                            list_erro.add(erro);
+                        }
+                    }
                     addToken(token, posLinha, posColuna + inicioToken, destino);
                     inicioToken = i;
                     token = "";
@@ -153,6 +184,8 @@ public class Lexica
 
         if (!token.isEmpty())
             addToken(token, posLinha, posColuna + inicioToken, destino); //(i - token.length())+1
+
+        return inicioToken;
     }
     private int cadeiaCaracterString(String linha, int i, int posLinha, int posColuna, List<Token> destino)
     {
@@ -244,6 +277,7 @@ public class Lexica
         if(token.equals("+")) return "t_adicao";
         if(token.equals("-")) return "t_subtracao";
         if(token.equals("/")) return "t_divisao";
+        if(token.equals("%")) return "t_resto";
         if(token.equals("*=")) return "t_multiplicacaoIgual";
         if(token.equals("+=")) return "t_adicaoIgual";
         if(token.equals("-=")) return "t_subtracaoIgual";
@@ -296,6 +330,16 @@ public class Lexica
             return "t_cadeiaCaracterString";
         return "";
     }
+    private String verficiarTermoLogico(String token)
+    {
+        if (token.equals("&&"))
+            return "t_and";
+        if (token.equals("||"))
+            return "t_or";
+        return "";
+    }
+
+
     private String verificarCategoria(String token)
     {
         if(list_opRelacional.contains(token))
@@ -315,6 +359,9 @@ public class Lexica
 
         if(isCadeiaCaracter(token))
             return verificarSubCadeiaCaracteres(token);
+
+        if(token.equals("&&") || token.equals("||"))
+            return verficiarTermoLogico(token);
 
         if(isNumero(token))
             return "t_numero";

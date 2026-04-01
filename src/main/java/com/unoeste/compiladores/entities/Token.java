@@ -138,6 +138,9 @@ public class Token {
         if (this.token.equals("t_cadeiaCaracterString") || this.token.equals("t_cadeiaCaracterChar"))
             return "cadeia-caracteres";
         else
+        if (this.token.equals("t_and") || this.token.equals("t_or"))
+            return "termo-logico";
+        else
         {
             return "unitarios";
         }
