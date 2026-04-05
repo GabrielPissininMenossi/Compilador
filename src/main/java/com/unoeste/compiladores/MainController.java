@@ -156,7 +156,7 @@ public class MainController implements Initializable {
 
         Sintatico sintatico = new Sintatico(lexica, erroList);
         sintatico.analisarSintatico();
-
+        limparCores();
         exibirLogErro(codeArea);
     }
     public void exibirLogErro(CodeArea codeArea)
@@ -167,7 +167,8 @@ public class MainController implements Initializable {
         {
             if (!flag)
             {
-                codeArea.setParagraphStyle(erroList.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
+                if (erroList.get(i).getLinha() > 0)
+                    codeArea.setParagraphStyle(erroList.get(i).getLinha() - 1,  Collections.singleton("erro-linha"));
                 codeArea.multiPlainChanges().subscribe(change -> {
 
                     if (!erroList.isEmpty()) {
@@ -185,6 +186,16 @@ public class MainController implements Initializable {
             logErro.appendText(erroList.get(i).getMensagem());
             i++;
         }
+    }
+    private void limparCores()
+    {
+        int i = 0;
+        while (i < codeArea.getParagraphs().size())
+        {
+            codeArea.setParagraphStyle(i, Collections.emptyList());
+            i++;
+        }
+
     }
     public void colorirEnquantoDigita()
     {

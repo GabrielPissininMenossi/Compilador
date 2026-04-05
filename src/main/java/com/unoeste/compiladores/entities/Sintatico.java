@@ -9,7 +9,7 @@ public class Sintatico
     private  Pilha pilha;
     private  Token tokenAtual;
     private  List<Erro> erroList;
-
+    private  int pos;
     public Sintatico(Lexica lexica, List<Erro> erroList) {
         this.lexica = lexica;
         this.pilha = new Pilha();
@@ -35,7 +35,7 @@ public class Sintatico
                 }
             break;
             case "REPETICAO_COMANDO":
-                if (categoria.equals("t_void") || categoria.equals("t_char") || categoria.equals("t_int")
+                if (categoria.equals("t_void") || categoria.equals("t_char") || categoria.equals("t_int") || categoria.equals("t_string")
                         || categoria.equals("t_float") || categoria.equals("t_double") || categoria.equals("t_identificador")
                         || categoria.equals("t_if") || categoria.equals("t_while") || categoria.equals("t_return") || categoria.equals("t_abreChave"))
                 {
@@ -44,11 +44,11 @@ public class Sintatico
                 else // follow
                 if (categoria.equals("t_fechaChave"))
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
                 break;
             case "COMANDO":
-                if (categoria.equals("t_void") || categoria.equals("t_char") || categoria.equals("t_int")
+                if (categoria.equals("t_void") || categoria.equals("t_char") || categoria.equals("t_int") || categoria.equals("t_string")
                         || categoria.equals("t_float") || categoria.equals("t_double"))
                 {
                     return Arrays.asList("DECLARACAOVARIAVEL");
@@ -90,6 +90,9 @@ public class Sintatico
                 if (categoria.equals("t_char"))
                     return Arrays.asList("char");
                 else
+                if (categoria.equals("t_string"))
+                    return Arrays.asList("string");
+                else
                 if (categoria.equals("t_int"))
                     return Arrays.asList("int");
                 else
@@ -106,7 +109,7 @@ public class Sintatico
                 }
                 else // como é opcional
                 if (categoria.equals("t_virgula") || categoria.equals("t_pontoVirgula"))
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 break;
             case "REPETICAO_VARIAVEL":
                 if (categoria.equals("t_virgula")) // first
@@ -116,7 +119,7 @@ public class Sintatico
                 else // follow
                 if (categoria.equals("t_pontoVirgula"))
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
                 break;
             case "DECLARACAOATRIBUICAO":
@@ -134,7 +137,7 @@ public class Sintatico
                 }
                 else
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
             case "DECLARACAOITERACAO":
                 if (categoria.equals("t_while"))
@@ -145,7 +148,7 @@ public class Sintatico
             case "DECLARACAORETORNO": // olha o first
                 if (categoria.equals("t_return"))
                 {
-                    return Arrays.asList("return", "EXPRESSAOLOGICA");
+                    return Arrays.asList("return", "EXPRESSAOLOGICA", ";");
                 }
                 break;
             case "EXPRESSAOLOGICA":
@@ -157,7 +160,7 @@ public class Sintatico
                 }
                 else
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
             case "TERMOLOGICO":
                 return Arrays.asList("EXPRESSAORELACIONAL", "REPETICAO_TERMOLOGICO");
@@ -168,7 +171,7 @@ public class Sintatico
                 }
                 else
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
             case "EXPRESSAORELACIONAL":
                 return Arrays.asList("EXPRESSAOARITMETICA", "OPCAO_RELACIONAL");
@@ -180,7 +183,7 @@ public class Sintatico
                 }
                 else
                 {
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
                 }
             case "OPERADORRELACIONAL":
                 if (categoria.equals("t_maior"))
@@ -202,14 +205,14 @@ public class Sintatico
                 if (categoria.equals("t_adicao") || categoria.equals("t_subtracao"))
                     return Arrays.asList(token.getLexema(), "TERMO", "REPETICAO_EXPRESSAOARITMETICA");
                 else
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
             case "TERMO":
                 return Arrays.asList("VALOR", "REPETICAO_TERMO");
             case "REPETICAO_TERMO":
                 if (categoria.equals("t_multiplicacao") || categoria.equals("t_divisao") || categoria.equals("t_resto"))
                     return Arrays.asList(token.getLexema(),"VALOR", "REPETICAO_TERMO");
                 else
-                    return Arrays.asList("EPSILON");
+                    return Arrays.asList("$");
             case "VALOR":
                 if (categoria.equals("t_numero"))
                     return Arrays.asList("NUMERO");
@@ -217,6 +220,11 @@ public class Sintatico
                 if (categoria.equals("t_identificador"))
                     return Arrays.asList("IDENTIFICADOR");
                 else
+                if (categoria.equals("t_cadeiaCaracterChar"))
+                    return Arrays.asList("CARACTER");
+                else
+                if (categoria.equals("t_cadeiaCaracterString"))
+                    return Arrays.asList("STRING");
                 if (categoria.equals("t_abreParentese"))
                     return Arrays.asList("(", "EXPRESSAOLOGICA", ")");
                 else
@@ -228,42 +236,45 @@ public class Sintatico
     }
     public void analisarSintatico()
     {
-        int pos = 0;
+        pos = 0;
         pilha.push("$");
         pilha.push("PROGRAMA"); // meu inicio
         tokenAtual = lexica.getToken(pos++);
+        String estruturaAtual = "";
         while (!pilha.isEmpty())
         {
             NoPilha noPilha = pilha.pop();
             String topo = noPilha.getString();
             if (tokenAtual != null)
             {
-                if (!topo.equals("EPSILON")) // terminou uma estrutura/bloco qnd tem opcional ou repeticao
+                if (!topo.equals("$")) // terminou uma estrutura/bloco qnd tem opcional ou repeticao
                 {
-                    if (topo.equals("$")) // a pilha acabou, mas ainda existem tokens
-                    {
-                        if (!tokenAtual.getToken().equals("$"))
-                        {
-                            //Erro erro = new Erro(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Token Inesperado: %s Após o Fim do Programa.\n", tokenAtual.getLinha(), tokenAtual.getColuna(), tokenAtual.getLexema()), tokenAtual.getLinha(), tokenAtual.getColuna());
-                            //erroList.add(erro);
-                        }
-
-                    }
-                    else
                     if (isTerminal(topo))
                     {
                         if (topo.equals(tokenAtual.getLexema()) || (topo.equals("IDENTIFICADOR") && tokenAtual.getToken().equals("t_identificador"))
-                                || (topo.equals("NUMERO") && tokenAtual.getToken().equals("t_numero")))
+                            || (topo.equals("NUMERO") && tokenAtual.getToken().equals("t_numero")) || (topo.equals("CARACTER") && tokenAtual.getToken().equals("t_cadeiaCaracterChar"))
+                            || (topo.equals("STRING") && tokenAtual.getToken().equals("t_cadeiaCaracterString")))
                         {
+                            if (topo.equals("while") || topo.equals("if") || topo.equals("else") || topo.equals("main"))
+                                estruturaAtual = topo;
+                            else
+                            if (topo.equals("="))
+                                estruturaAtual = "expressão de atribuição";
+                            else
+                            if (topo.equals("return"))
+                                estruturaAtual = "declaração de retorno";
+                            else
+                            if (topo.equals("int") || topo.equals("float") || topo.equals("char") || topo.equals("double") || topo.equals("void"))
+                                estruturaAtual = "declaração de variável";
+
                             tokenAtual = lexica.getToken(pos++);
                         }
                         else
                         {
-                            Erro erro = new Erro(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Esperado: '%s', mas encontrado '%s'.\n",tokenAtual.getLinha(), tokenAtual.getColuna(), topo, tokenAtual.getLexema())
-                                    ,tokenAtual.getLinha(), tokenAtual.getColuna());
+                            Erro erro = getMensagemErroTerminal(topo, tokenAtual, estruturaAtual);
                             erroList.add(erro);
                             // Modo Pânico
-                            tokenAtual = lexica.getToken(pos++);
+                            tokenAtual = modoPanico();
                         }
 
                     }
@@ -285,31 +296,82 @@ public class Sintatico
                                     tokenAtual.getLinha(), tokenAtual.getColuna(), tokenAtual.getLexema(), topo),
                                     tokenAtual.getLinha(), tokenAtual.getColuna());
                             erroList.add(erro);
+                            tokenAtual = modoPanico();
                         }
                     }
                 }
 
             }
-//            else // acabaram os tokens, mas a pilha ainda nao esta vazia
-//            {
-//                if (!topo.equals("EPSILON") && !topo.equals("$"))
-//                {
-//                    int linha = 1, coluna = 1;
-//                    if (ultimoToken != null)
-//                    {
-//                        linha = ultimoToken.getLinha();
-//                        coluna = ultimoToken.getColuna();
-//                    }
-//                    Erro erro = new Erro(String.format("[ERRO SINTÁTICO] Linha %d, Coluna: %d: Faltou fechar a estrutura: '%s'.\n", linha, coluna,topo), linha, coluna);
-//                    erroList.add(erro);
-//                    flag = false;
-//                }
-//            }
         }
+        if (tokenAtual != null && !tokenAtual.getToken().equals("$")) // acabou a pilha, mas ainda tem tokens
+        {
+            Erro erro = new Erro(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Token Inesperado: '%s' Após o Fim do Programa.\n", tokenAtual.getLinha(), tokenAtual.getColuna(), tokenAtual.getLexema()), tokenAtual.getLinha(), tokenAtual.getColuna());
+            erroList.add(erro);
+        }
+        Erro erro = new Erro("", 0,0);
+        if (!erroList.isEmpty())
+            erro.setMensagem(String.format("[SUCESSO] Análise sintática concluída com %d erro(s) encontrado(s).\n", erroList.size()));
+        else
+            erro.setMensagem("[SUCESSO] Análise sintática concluída com 0 erro encontrado.\n");
+        erroList.add(erro);
     }
+    private Erro getMensagemErroTerminal(String topo, Token tokenAtual, String estruturaAtual)
+    {
+        int linha = tokenAtual.getLinha(), coluna = tokenAtual.getColuna();
+        Erro erro = new Erro("", linha, coluna);
+        if (topo.equals(")"))
+        {
+            if (!estruturaAtual.isEmpty())
+                erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Estrutura '%s' sem parêntese de fechamento '%s'.\n", linha, coluna, estruturaAtual, topo));
+            else
+                erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Estrutura sem parêntese de fechamento '%s'.\n", linha, coluna, topo));
 
+        }
+        else
+        if (topo.equals("}"))
+            erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Estrutura sem chave de fechamento '%s'.\n", linha, coluna, topo));
+        else
+        if (topo.equals(";"))
+        {
+            if (!estruturaAtual.isEmpty() && !estruturaAtual.equals("if") && !estruturaAtual.equals("while") && !estruturaAtual.equals("else") && !estruturaAtual.equals("main"))
+                erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Esperado '%s' após %s, mas encontrado '%s'.\n", linha, coluna, topo, estruturaAtual,tokenAtual.getLexema()));
+            else
+                erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Esperado '%s', mas encontrado '%s'.\n", linha, coluna, topo, tokenAtual.getLexema()));
+
+        }
+        else
+            erro.setMensagem(String.format("[ERRO SINTÁTICO] Linha %d, Coluna %d: Esperado '%s', mas encontrado '%s'.\n", linha, coluna, topo, tokenAtual.getLexema()));
+        return erro;
+    }
     private boolean isTerminal(String topo)
     {
-        return topo.equals(topo.toLowerCase()) || topo.equals("IDENTIFICADOR") ||  topo.equals("NUMERO");
+        return topo.equals(topo.toLowerCase()) || topo.equals("IDENTIFICADOR") ||  topo.equals("NUMERO") || topo.equals("STRING") ||  topo.equals("CARACTER") ;
+    }
+    private Token modoPanico()
+    {
+
+        while (tokenAtual != null && !tokenAtual.getToken().equals("$") && !isTokenSincronizacao(tokenAtual))
+        {
+            tokenAtual = lexica.getToken(pos++);
+        }
+
+        return tokenAtual;
+    }
+    private boolean isTokenSincronizacao(Token token)
+    {
+        String categoria = token.getToken();
+        if (categoria.equals("t_pontoVirgula") || categoria.equals("t_fechaChave") || categoria.equals("t_abreChave"))
+        {
+            return true;
+        }
+        if (categoria.equals("t_while") || categoria.equals("t_if") ||
+            categoria.equals("t_int") || categoria.equals("t_void") ||
+            categoria.equals("t_char") || categoria.equals("t_float") ||
+            categoria.equals("t_double") || categoria.equals("t_return") || categoria.equals("t_else") || categoria.equals("t_string"))
+        {
+            return true;
+        }
+
+        return false;
     }
 }
