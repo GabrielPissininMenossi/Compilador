@@ -309,11 +309,28 @@ public class Sintatico
             erroList.add(erro);
         }
         Erro erro = new Erro("", 0,0);
-        if (!erroList.isEmpty())
-            erro.setMensagem(String.format("[SUCESSO] Análise sintática concluída com %d erro(s) encontrado(s).\n", erroList.size()));
+
+        int qtdeErros = obterQtdeErros();
+        if (qtdeErros > 0)
+            erro.setMensagem(String.format("[SUCESSO] Análise sintática concluída com %d erro(s) encontrado(s).\n", qtdeErros));
         else
             erro.setMensagem("[SUCESSO] Análise sintática concluída com 0 erro encontrado.\n");
         erroList.add(erro);
+    }
+    private int obterQtdeErros()
+    {
+        int qtdeErros = 0;
+        if (!erroList.isEmpty())
+        {
+            int i = 0;
+            while (i < erroList.size())
+            {
+                if (!erroList.get(i).getMensagem().startsWith("[ERRO LÉXICO]"))
+                    qtdeErros++;
+                i++;
+            }
+        }
+        return qtdeErros;
     }
     private Erro getMensagemErroTerminal(String topo, Token tokenAtual, String estruturaAtual)
     {
