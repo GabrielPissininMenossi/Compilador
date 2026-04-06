@@ -11,10 +11,10 @@ public class Lexica
     private List<Character> list_letras = new ArrayList<>();
 
     private List<String> list_opRelacional = new ArrayList<>(Arrays.asList("<", ">", "<=", ">=", "==", "!="));
-    private List<String> list_tipos = new ArrayList<>(Arrays.asList("void", "char", "int", "float", "double", "string"));
+    private List<String> list_tipos = new ArrayList<>(Arrays.asList("void", "char", "int", "float", "double"));
     private List<String> list_comandosReservados = new ArrayList<>(Arrays.asList("while", "if", "else", "return", "main"));
     private List<String> list_opMatematicos = new ArrayList<>(Arrays.asList("*", "+", "-", "/", "%", "!", "*=", "+=", "-=", "/=", "%="));
-    private List<Character> list_unitarios = new ArrayList<>(Arrays.asList('{', '}', ',', '=', ';', '.', '(', ')'));
+    private List<Character> list_unitarios = new ArrayList<>(Arrays.asList('{', '}', ',', '=', ';', '.', '(', ')', '[', ']'));
     private List<Character> list_especiais = new ArrayList<>(Arrays.asList('@', '#', '$'));
 
     private List<Erro> list_erro =  new ArrayList<>();
@@ -261,6 +261,8 @@ public class Lexica
     {
         if(token.equals("{")) return "t_abreChave";
         if(token.equals("}")) return "t_fechaChave";
+        if(token.equals("[")) return "t_abreColchete";
+        if(token.equals("]")) return "t_fechaColchete";
         if(token.equals(",")) return "t_virgula";
         if(token.equals("=")) return "t_igualAtribuicao";
         if(token.equals(";")) return "t_pontoVirgula";
@@ -295,7 +297,6 @@ public class Lexica
         if(token.equals("int")) return "t_int";
         if(token.equals("float")) return "t_float";
         if(token.equals("double")) return "t_double";
-        if(token.equals("string")) return "t_string";
 
         return "";
     }

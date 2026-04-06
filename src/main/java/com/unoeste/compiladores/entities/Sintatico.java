@@ -88,7 +88,7 @@ public class Sintatico
                     return Arrays.asList("void");
                 else
                 if (categoria.equals("t_char"))
-                    return Arrays.asList("char");
+                    return Arrays.asList("char", "OPCAO_COLCHETE");
                 else
                 if (categoria.equals("t_string"))
                     return Arrays.asList("string");
@@ -102,6 +102,16 @@ public class Sintatico
                 if (categoria.equals("t_double"))
                     return Arrays.asList("double");
                 break;
+            case "OPCAO_COLCHETE":
+                if (categoria.equals("t_abreColchete"))
+                {
+                    return Arrays.asList("[", "]");
+                }
+                else
+                {
+                    return Arrays.asList("$");
+                }
+
             case "OPCAO_ATRIBUICAO":
                 if (categoria.equals("t_igualAtribuicao"))
                 {
