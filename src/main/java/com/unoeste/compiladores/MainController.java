@@ -1,9 +1,6 @@
 package com.unoeste.compiladores;
 
-import com.unoeste.compiladores.entities.Erro;
-import com.unoeste.compiladores.entities.Lexica;
-import com.unoeste.compiladores.entities.Sintatico;
-import com.unoeste.compiladores.entities.Token;
+import com.unoeste.compiladores.entities.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -45,7 +42,6 @@ public class MainController implements Initializable {
     private ObservableList<Token> sucessos = FXCollections.observableArrayList();
 
     private Lexica lexica;
-
     private boolean claro = true;
 
     List<Token> tokensColoracao = new ArrayList<>();
@@ -156,6 +152,9 @@ public class MainController implements Initializable {
 
         Sintatico sintatico = new Sintatico(lexica, erroList);
         sintatico.analisarSintatico();
+
+        Semantica semantica = new Semantica(lexica, erroList);
+        semantica.analisarSemantico();
         limparCores();
         exibirLogErro(codeArea);
     }
