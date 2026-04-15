@@ -7,84 +7,122 @@ import java.util.List;
 public class Semantica
 {
     private Lexica lexica;
-    private Token tokenAtual;
     private List<Erro> erroList;
     private List<Token> visitados;
     private List<String> list_tipos = new ArrayList<>(Arrays.asList("t_void", "t_char", "t_int", "t_float", "t_double"));
-    private int pos;
+
     public Semantica(Lexica lexica, List<Erro> erroList)
     {
         this.lexica = lexica;
         this.erroList = erroList;
-        this.tokenAtual = null;
-        this.pos = 0;
-    }
-    private int buscarIdentificador(int pos)
-    {
-        int aux = pos;
-        tokenAtual =  lexica.getToken(aux);
-        while (aux < lexica.getTokens().size() && !tokenAtual.getToken().equals("t_identificador"))
-            tokenAtual = lexica.getToken(++aux);
-        if (aux < lexica.getTokens().size())
-            return aux;
-        return -1;
+
     }
 
     public void analisarSemantico()
     {
-        int posAux;
+        // Verificacao de Tipos
+        int pos = 0;
+        int indiceTokenIdentificador;
         do
         {
-            posAux = buscarIdentificador(pos);
-            pos = posAux + 1;
-            if (posAux != -1) // achou um id
+            indiceTokenIdentificador = buscarPosTokenIdentificador(pos);
+            pos = indiceTokenIdentificador + 1; // a partir do identificador encontrado
+            if (indiceTokenIdentificador != -1)
             {
-                System.out.println("Token ID: "+tokenAtual.getLexema());
-                int posInicializado = isInicializado(posAux);
-                if (posInicializado != -1)
+                if (isDeclaracao(indiceTokenIdentificador))
                 {
-                    if (isAnteriorTipo(posInicializado))
+                    if (isAtribuicao(indiceTokenIdentificador)) // int matheus = 10;
                     {
-                        System.out.println("entrou: erro semantico");
-                        if (isProximoAtribuicao(posInicializado))
-                        {
-                            // atualizar valor
-                        }
-                    }
-                    else
-                    {
-                        // erro semantico
+
 
                     }
+                    else // int matheus, x;
+                    {
+
+                    }
+                }
+                else
+                if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
+                {
 
                 }
+                else // x = x + matheus;
+                {
 
+                }
+                // primeiro caso: foi apenas declarado
+                // segundo caso: foi apenas atribuido, mas ja declarado
+                // teceiro caso: foi declarado e atribuido
+                // quarto caso: esta sendo utilizado, porem ja declarado
             }
 
 
-
-        }while (posAux != -1);
+        } while (indiceTokenIdentificador != -1);
 
     }
 
-    private boolean isProximoAtribuicao(int posInicializado)
+    private boolean isDeclaracao(int indiceTokenIdentificador)
     {
-        return lexica.getToken(posInicializado + 1).getToken().equals("t_igualAtribuicao");
+        Token tokenTipo = buscarTipoVariavel(indiceTokenIdentificador);
+        if (tokenTipo != null) // achei um token identificador com seu tipo declarado
+        {
+            Token tokenAtual = lexica.getToken(indiceTokenIdentificador);
+            if (tokenAtual.getTipo().isEmpty())
+            {
+                tokenAtual.setTipo(tokenTipo.getLexema());
+                return true;
+            }
+
+        }
+        return false;
     }
 
-    private boolean isAnteriorTipo(int posInicializado)
+    private Token buscarTipoVariavel(int indiceTokenIdentificador)
     {
-        return list_tipos.contains(lexica.getToken(posInicializado - 1).getToken());
+        int i = indiceTokenIdentificador;
+        List<Token> tokenList = lexica.getTokens();
+        while (i > 0 && !list_tipos.contains(tokenList.get(i).getToken()))
+            i--;
+        if (i > 0) // achou um token
+        {
+            if (tokenList.get(i-1).getToken().equals("t_pontoVirgula") ||
+                tokenList.get(i-1).getToken().equals("t_abreChave") ||
+                tokenList.get(i-1).getToken().equals("t_fechaChave"))
+            {
+                return tokenList.get(i);
+            }
+        }
+        return null;
+
     }
 
-    private int isInicializado(int pos)
+    private boolean isAtribuicao(int indiceTokenIdentificador)
     {
-       int posAux = 0;
-       while (posAux < pos && !lexica.getToken(posAux).getLexema().equals(tokenAtual.getLexema()))
-           posAux++;
-       if (posAux < pos)
-           return posAux;
-       return -1;
+
+        List<Token> tokenList = lexica.getTokens();
+        if (indiceTokenIdentificador + 1 < tokenList.size()  && tokenList.get(indiceTokenIdentificador + 1).getToken().equals("t_igualAtribuicao"))
+        {
+            // verificar valor, dps
+            Token token = tokenList.get(indiceTokenIdentificador);
+            Token tokenValor = tokenList.get(indiceTokenIdentificador + 2);
+            token.setValor(tokenValor.getLexema());
+            return true;
+        }
+        return false;
+
     }
+
+    private int buscarPosTokenIdentificador(int pos)
+    {
+        List<Token> tokenList = lexica.getTokens();
+        int i = pos;
+        while (i < tokenList.size() && !tokenList.get(i).getToken().equals("t_identificador"))
+            i++;
+        if (i < tokenList.size())
+            return i;
+        return -1;
+
+    }
+
 
 }

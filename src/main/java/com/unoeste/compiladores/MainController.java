@@ -32,6 +32,8 @@ public class MainController implements Initializable {
     public TableColumn<Token, String> colToken;
     public TableColumn<Token, Integer> colLinha;
     public TableColumn<Token, Integer> colColuna;
+    public TableColumn<Token, String> colTipo;
+    public TableColumn<Token, String> colValor;
     @FXML
     public TextArea logErro;
     @FXML
@@ -68,6 +70,8 @@ public class MainController implements Initializable {
         colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
         colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
         colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
+        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
+        colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         //tableView.setItems(sucessos);
 
         //chama função a cada alteração no codeArea

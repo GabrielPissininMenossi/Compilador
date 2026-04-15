@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane minHeight="600.0" minWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unoeste.compiladores.MainController">
+<BorderPane minHeight="600.0" minWidth="1024.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unoeste.compiladores.MainController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
@@ -40,17 +40,19 @@
    <bottom>
       <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <left>
-            <TableView fx:id="tableView" prefWidth="400.0" BorderPane.alignment="CENTER">
+            <TableView fx:id="tableView" prefHeight="200.0" prefWidth="490.0" BorderPane.alignment="CENTER">
               <columns>
                 <TableColumn fx:id="colLexema" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Lexema" />
                 <TableColumn fx:id="colToken" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Token" />
+                  <TableColumn fx:id="colTipo" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Tipo" />
+                  <TableColumn fx:id="colValor" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Valor" />
                   <TableColumn fx:id="colLinha" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Linha" />
                   <TableColumn fx:id="colColuna" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Coluna" />
               </columns>
             </TableView>
          </left>
          <right>
-            <TextArea fx:id="logErro" editable="false" prefWidth="460.0" BorderPane.alignment="CENTER" />
+            <TextArea fx:id="logErro" editable="false" prefWidth="534.0" BorderPane.alignment="CENTER" />
          </right>
       </BorderPane>
    </bottom>
