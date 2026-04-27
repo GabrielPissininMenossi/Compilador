@@ -46,8 +46,8 @@
                 <TableColumn fx:id="colToken" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Token" />
                   <TableColumn fx:id="colTipo" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Tipo" />
                   <TableColumn fx:id="colValor" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Valor" />
-                  <TableColumn fx:id="colLinha" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Linha" />
-                  <TableColumn fx:id="colColuna" editable="false" prefWidth="84.0" resizable="false" sortable="false" text="Coluna" />
+                  <TableColumn fx:id="colLinha" editable="false" prefWidth="87.0" resizable="false" sortable="false" text="Linha" />
+                  <TableColumn fx:id="colColuna" editable="false" prefWidth="81.0" resizable="false" sortable="false" text="Coluna" />
               </columns>
             </TableView>
          </left>

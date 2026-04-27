@@ -15,7 +15,6 @@ public class Semantica
     {
         this.lexica = lexica;
         this.erroList = erroList;
-
     }
 
     public void analisarSemantico()
@@ -29,61 +28,109 @@ public class Semantica
             pos = indiceTokenIdentificador + 1; // a partir do identificador encontrado
             if (indiceTokenIdentificador != -1)
             {
-                if (isDeclaracao(indiceTokenIdentificador))
+                if (isDeclarado(indiceTokenIdentificador))
                 {
-                    if (isAtribuicao(indiceTokenIdentificador)) // int matheus = 10;
+                    Token tipo = buscarTipoVariavel(indiceTokenIdentificador);
+                    Token id = lexica.getTokens().get(indiceTokenIdentificador);
+
+                    if(tipo != null)
                     {
-
-
+                        //erro semântico -> variável já declarada
+                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' já declarado.\n",
+                                id.getLinha(), id.getColuna(), id.getLexema()),
+                                id.getLinha(), id.getColuna());
+                        erroList.add(erro);
                     }
-                    else // int matheus, x;
-                    {
 
+                    if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
+                    {
+                        // Mudar o valor do identificador
+
+                        // Verificar se a expressão retorna o tipo correto da variável
                     }
                 }
                 else
-                if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
                 {
+                    setarTipo(indiceTokenIdentificador);
 
-                }
-                else // x = x + matheus;
-                {
+                    if (isAtribuicao(indiceTokenIdentificador)) // int matheus = 10;
+                    {
+                        // Mudar o valor do identificador
 
+                        // Verificar se a expressão retorna o tipo correto da variável
+                    }
                 }
-                // primeiro caso: foi apenas declarado
-                // segundo caso: foi apenas atribuido, mas ja declarado
-                // teceiro caso: foi declarado e atribuido
-                // quarto caso: esta sendo utilizado, porem ja declarado
             }
-
 
         } while (indiceTokenIdentificador != -1);
 
+        // Verificação de Não Utilização
+        // Reconhecer identificadores sem valores
+        for(Token token : lexica.getTokens())
+        {
+            if(token.getToken().equals("t_identificador") && token.getValor().isEmpty())
+            {
+                //erro semântico -> variável nunca utilizada
+                Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' nunca utilizado.\n",
+                        token.getLinha(), token.getColuna(), token.getLexema()),
+                        token.getLinha(), token.getColuna());
+                erroList.add(erro);
+            }
+        }
     }
 
-    private boolean isDeclaracao(int indiceTokenIdentificador)
+    private void setarTipo(int indiceTokenIdentificador)
     {
         Token tokenTipo = buscarTipoVariavel(indiceTokenIdentificador);
-        if (tokenTipo != null) // achei um token identificador com seu tipo declarado
-        {
-            Token tokenAtual = lexica.getToken(indiceTokenIdentificador);
-            if (tokenAtual.getTipo().isEmpty())
-            {
-                tokenAtual.setTipo(tokenTipo.getLexema());
-                return true;
-            }
+        Token tokenAtual = lexica.getToken(indiceTokenIdentificador);
 
+        if (tokenTipo != null && tokenAtual.getTipo().isEmpty())
+        {
+            tokenAtual.setTipo(tokenTipo.getLexema());
         }
-        return false;
+        else
+        {
+            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' não declarado.\n",
+                    tokenAtual.getLinha(), tokenAtual.getColuna(), tokenAtual.getLexema()),
+                    tokenAtual.getLinha(), tokenAtual.getColuna());
+            erroList.add(erro);
+        }
+    }
+
+    private boolean isDeclarado(int indiceTokenIdentificador)
+    {
+        List<Token> tokens = lexica.getTokens();
+        Token token = lexica.getToken(indiceTokenIdentificador);
+
+        int pos = 0;
+        while(pos < tokens.size() && !tokens.get(pos).getLexema().equals(token.getLexema()))
+            pos ++;
+
+        if(pos < tokens.size() && tokens.get(pos).getTipo().isEmpty()) //achei
+        {
+            return false;
+        }
+        else
+        {
+            token.setTipo(tokens.get(pos).getTipo());
+            token.setValor(tokens.get(pos).getValor());
+
+            return true;
+        }
     }
 
     private Token buscarTipoVariavel(int indiceTokenIdentificador)
     {
         int i = indiceTokenIdentificador;
         List<Token> tokenList = lexica.getTokens();
-        while (i > 0 && !list_tipos.contains(tokenList.get(i).getToken()))
+
+        while (i > 0 && !list_tipos.contains(tokenList.get(i).getToken()) &&
+                !tokenList.get(i).getToken().equals("t_pontoVirgula") &&
+                !tokenList.get(i).getToken().equals("t_abreChave") &&
+                !tokenList.get(i).getToken().equals("t_fechaChave"))
             i--;
-        if (i > 0) // achou um token
+
+        if (i > 0 && list_tipos.contains(tokenList.get(i).getToken())) // achou um token
         {
             if (tokenList.get(i-1).getToken().equals("t_pontoVirgula") ||
                 tokenList.get(i-1).getToken().equals("t_abreChave") ||
@@ -93,7 +140,6 @@ public class Semantica
             }
         }
         return null;
-
     }
 
     private boolean isAtribuicao(int indiceTokenIdentificador)
@@ -121,8 +167,6 @@ public class Semantica
         if (i < tokenList.size())
             return i;
         return -1;
-
     }
-
 
 }
