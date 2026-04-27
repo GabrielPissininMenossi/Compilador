@@ -1,13 +1,18 @@
-package com.unoeste.compiladores.entities;
+package com.unoeste.compiladores.entities.Pilhas;
 
 public class Pilha
 {
     private NoPilha topo;
 
+    public Pilha() {
+        inicializar();
+    }
+
     public void inicializar()
     {
         topo = null;
     }
+
     public void push(String string)
     {
         NoPilha noPilha = new NoPilha(string, null);
@@ -21,6 +26,7 @@ public class Pilha
             topo = noPilha;
         }
     }
+
     public NoPilha pop()
     {
         NoPilha aux;
@@ -28,6 +34,12 @@ public class Pilha
         topo = topo.getProx();
         return aux;
     }
+
+    public NoPilha top()
+    {
+        return topo;
+    }
+
     public boolean isEmpty()
     {
         return topo == null;

@@ -1,12 +1,15 @@
 package com.unoeste.compiladores.entities;
 
+import com.unoeste.compiladores.entities.Pilhas.NoPilha;
+import com.unoeste.compiladores.entities.Pilhas.Pilha;
+
 import java.util.Arrays;
 import java.util.List;
 
 public class Sintatico
 {
     private  Lexica lexica;
-    private  Pilha pilha;
+    private Pilha pilha;
     private  Token tokenAtual;
     private  List<Erro> erroList;
     private  int pos;
