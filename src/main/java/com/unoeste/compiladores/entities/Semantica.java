@@ -268,19 +268,17 @@ public class Semantica
 
     private boolean temMaiorPrecedencia(String operador, String operadorEmpilhado)
     {
-        //FALTA TRATAR % e /
-
+        //Ordem:
         // ( )
         // * / %
         // + -
 
         if(operador.equals("(") || operador.equals(")"))
         {
-            if(operadorEmpilhado.equals("(") || operadorEmpilhado.equals(")"))
-                return false;
-            return true;
+            return !operadorEmpilhado.equals("(") && !operadorEmpilhado.equals(")");
         }
-        if(operador.equals("*") && (operadorEmpilhado.equals("+") || operadorEmpilhado.equals("-")))
+        if( (operador.equals("*") || operador.equals("/") || operador.equals("%")) &&
+                (operadorEmpilhado.equals("+") || operadorEmpilhado.equals("-")))
             return true;
 
         return false;
@@ -377,8 +375,23 @@ public class Semantica
         return token.getLexema();
     }
 
+    //maior linha pra menor
     private void OrdenarListaErros()
     {
-        // --> ordenar: erroList pelo
+        Erro aux;
+        for (int i =0; i < erroList.size(); i++)
+        {
+            int j = i;
+            while(j < erroList.size())
+            {
+               if(erroList.get(i).getLinha() <  erroList.get(j).getLinha())
+               {
+                   aux = erroList.get(i);
+                   erroList.set(i, erroList.get(j));
+                   erroList.set(j,aux);
+               }
+                j++;
+            }
+        }
     }
 }
