@@ -1,7 +1,9 @@
-package com.unoeste.compiladores.entities;
+package com.unoeste.compiladores.phases;
 
-import com.unoeste.compiladores.entities.Pilhas.NoPilha;
-import com.unoeste.compiladores.entities.Pilhas.Pilha;
+import com.unoeste.compiladores.entities.Erro;
+import com.unoeste.compiladores.stacks.Pilha;
+import com.unoeste.compiladores.entities.Simbolo;
+import com.unoeste.compiladores.entities.Token;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +15,14 @@ public class Semantica
     private List<Erro> erroList;
     private List<String> list_tipos = new ArrayList<>(Arrays.asList("t_void", "t_char", "t_int", "t_float", "t_double"));
     private String tipoExpressao;
+    private List<Simbolo> tabelaSimbolos;
+
     public Semantica(Lexica lexica, List<Erro> erroList)
     {
         this.lexica = lexica;
         this.erroList = erroList;
         this.tipoExpressao = "";
+        this.tabelaSimbolos = new ArrayList<>();
     }
 
     public void analisarSemantico()
@@ -25,6 +30,8 @@ public class Semantica
         // Verificacao de Tipos
         int pos = 0;
         int indiceTokenIdentificador;
+        tabelaSimbolos.clear();
+
         do
         {
             indiceTokenIdentificador = buscarPosTokenIdentificador(pos);
@@ -47,17 +54,26 @@ public class Semantica
 
                     if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
                     {
-                        String valor2 = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
-                        if(id.getTipo().equals(tipoExpressao))
+                        // MUDAR O VALOR DO IDENTIFICADOR
+
+                        // resolvo a expressão logo após o sinal de atribuição
+                        String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+
+                        // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
+                        Simbolo simbolo = GetSimboloWithThisToken(id);
+
+                        // se o tipo coincidir, então seto o novo valor
+                        if(simbolo != null && simbolo.getTipo().equals(tipoExpressao))
                         {
-                           id.setValor(valor2);
+                           simbolo.setValor(valorExpressao);
                         }
                         else
                         {
-                            //tratar os erros de tipos incorretos
                             //erro semântico -> tipo incorreto retornado
+
+                            assert simbolo != null; // --> garante que simbolo não pode ser nulo
                             Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                    id.getLinha(), id.getColuna(), id.getLexema(), id.getTipo(), tipoExpressao),
+                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
                                     id.getLinha(), id.getColuna());
                             erroList.add(erro);
                         }
@@ -68,20 +84,27 @@ public class Semantica
                     setarTipo(indiceTokenIdentificador);
 
                     Token id = lexica.getTokens().get(indiceTokenIdentificador);
+
                     if (isAtribuicao(indiceTokenIdentificador)) // int matheus = 10;
                     {
-                        // Mudar o valor do identificador
-                        String valor2 = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
-                        if(id.getTipo().equals(tipoExpressao) || (id.getTipo().equals("float") && tipoExpressao.equals("double")))
+                        // MUDAR O VALOR DO IDENTIFICADOR
+
+                        // resolvo a expressão logo após o sinal de atribuição
+                        String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+
+                        // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
+                        Simbolo simbolo = GetSimboloWithThisToken(id);
+
+                        if(simbolo != null && simbolo.getTipo().equals(tipoExpressao) || (simbolo.getTipo().equals("float") && tipoExpressao.equals("double")))
                         {
-                            id.setValor(valor2);
+                            simbolo.setValor(valorExpressao);
                         }
                         else
                         {
-                            //tratar os erros de tipos incorretos
                             //erro semântico -> tipo incorreto retornado
+                            assert simbolo != null;
                             Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                    id.getLinha(), id.getColuna(), id.getLexema(), id.getTipo(), tipoExpressao),
+                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
                                     id.getLinha(), id.getColuna());
                             erroList.add(erro);
                         }
@@ -93,14 +116,25 @@ public class Semantica
 
         // Verificação de Não Utilização
         // Reconhecer identificadores sem valores
-        for(Token token : lexica.getTokens())
+//        for(Token token : lexica.getTokens())
+//        {
+//            if(token.getToken().equals("t_identificador") && token.getValor().isEmpty())
+//            {
+//                //erro semântico -> variável nunca utilizada
+//                Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' nunca utilizado.\n",
+//                        token.getLinha(), token.getColuna(), token.getLexema()),
+//                        token.getLinha(), token.getColuna());
+//                erroList.add(erro);
+//            }
+//        }
+        for(Simbolo simbolo : tabelaSimbolos)
         {
-            if(token.getToken().equals("t_identificador") && token.getValor().isEmpty())
+            if(simbolo.getValor().isEmpty())
             {
                 //erro semântico -> variável nunca utilizada
-                Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' nunca utilizado.\n",
-                        token.getLinha(), token.getColuna(), token.getLexema()),
-                        token.getLinha(), token.getColuna());
+                Erro erro = new Erro(String.format("[ALERTA SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' nunca utilizado.\n",
+                        simbolo.getToken().getLinha(), simbolo.getToken().getColuna(), simbolo.getToken().getLexema()),
+                        simbolo.getToken().getLinha(), simbolo.getToken().getColuna());
                 erroList.add(erro);
             }
         }
@@ -161,6 +195,7 @@ public class Semantica
         return expressaoPosFixa;
 
     }
+
     private String meuResolveExpressaoPosFixa(int indiceTokenIdentificador)
     {
         List<String> expressaoPosFixa = FormarExpressaoPosFixa(indiceTokenIdentificador);
@@ -221,7 +256,6 @@ public class Semantica
             {
                 return "double";
             }
-
         }
         return "int";
 
@@ -232,9 +266,10 @@ public class Semantica
         Token tokenTipo = buscarTipoVariavelInicializacao(indiceTokenIdentificador);
         Token tokenAtual = lexica.getToken(indiceTokenIdentificador);
 
-        if (tokenTipo != null && tokenAtual.getTipo().isEmpty())
+        if (tokenTipo != null)
         {
-            tokenAtual.setTipo(tokenTipo.getLexema());
+            //adicionar o token com o seu tipo na tabela de símbolos
+            tabelaSimbolos.add(new Simbolo(tokenAtual, tokenTipo.getLexema(), ""));
         }
         else
         {
@@ -245,26 +280,51 @@ public class Semantica
         }
     }
 
+    private void setarValor(Token token, String valor)
+    {
+        int i=0;
+
+        // buscando pelo token identificador na tabela de símbolos
+        while(i < tabelaSimbolos.size() && !tabelaSimbolos.get(i).getToken().getLexema().equals(token.getLexema()))
+            i++;
+
+        // se achou
+        if(i < tabelaSimbolos.size())
+            tabelaSimbolos.get(i).setValor(valor);
+
+        // não achou
+    }
+
+    private Simbolo GetSimboloWithThisToken(Token token)
+    {
+        int i=0;
+        while(i < tabelaSimbolos.size() && !tabelaSimbolos.get(i).getToken().getLexema().equals(token.getLexema()))
+            i++;
+
+        // se achou
+        if(i < tabelaSimbolos.size())
+            return tabelaSimbolos.get(i);
+
+        // não achou
+        return null;
+    }
+
     private boolean isDeclarado(int indiceTokenIdentificador)
     {
-        List<Token> tokens = lexica.getTokens();
+        if(tabelaSimbolos.isEmpty())
+            return false;
+
         Token token = lexica.getToken(indiceTokenIdentificador);
 
         int pos = 0;
-        while(pos < tokens.size() && !tokens.get(pos).getLexema().equals(token.getLexema()))
-            pos ++;
+        while(pos < tabelaSimbolos.size() && !tabelaSimbolos.get(pos).getToken().getLexema().equals(token.getLexema()))
+            pos++;
 
-        if(pos < tokens.size() && tokens.get(pos).getTipo().isEmpty()) //achei
-        {
-            return false;
-        }
-        else
-        {
-            token.setTipo(tokens.get(pos).getTipo());
-            token.setValor(tokens.get(pos).getValor());
-
+        // se ele não chegou no final e o tipo NÃO está vazio --> está declarado
+        if(pos < tabelaSimbolos.size() && !tabelaSimbolos.get(pos).getTipo().isEmpty())
             return true;
-        }
+        else
+            return false;
     }
 
     private Token buscarTipoVariavelInicializacao(int indiceTokenIdentificador)
@@ -295,21 +355,29 @@ public class Semantica
     {
 
         List<Token> tokenList = lexica.getTokens();
-        if (indiceTokenIdentificador + 1 < tokenList.size()  && tokenList.get(indiceTokenIdentificador + 1).getToken().equals("t_igualAtribuicao"))
+        if (indiceTokenIdentificador + 1 < tokenList.size() && tokenList.get(indiceTokenIdentificador + 1).getToken().equals("t_igualAtribuicao"))
         {
             // verificar valor, dps
             Token token = tokenList.get(indiceTokenIdentificador);
             Token tokenValor = tokenList.get(indiceTokenIdentificador + 2);
+
+
+            // esse if e else irá tratar o caso de quando existe apenas um token após o sinal de atribuição (não precisava ser implementado)
             if (tokenValor.getToken().equals("t_identificador"))
             {
-                token.setValor(buscarValorIdentificador(tokenValor));
+                // pego o valor do próximo token
+                String valor = buscarValorIdentificador(tokenValor);
+
+                // seto o valor do "token" para o valor encontrado do "tokenValor"
+                setarValor(token, valor);
             }
             else
-                token.setValor(tokenValor.getLexema());
+                setarValor(token, tokenValor.getLexema());
+
+
             return true;
         }
         return false;
-
     }
 
     private int buscarPosTokenIdentificador(int pos)
@@ -392,17 +460,20 @@ public class Semantica
 
     private String buscarValorIdentificador(Token token)
     {
-        List<Token> tokenList = lexica.getTokens();
-        int pos = tokenList.indexOf(token);
-        pos--;
-        while (pos > 0 && !tokenList.get(pos).getLexema().equals(token.getLexema()))
-            pos--;
-        if (pos > 0)
-        {
-            return tokenList.get(pos).getValor();
-        }
+        int i=0;
+
+        // buscando pelo token identificador na tabela de símbolos
+        while(i < tabelaSimbolos.size() && !tabelaSimbolos.get(i).getToken().getLexema().equals(token.getLexema()))
+            i++;
+
+        // se achou
+        if(i < tabelaSimbolos.size())
+            return tabelaSimbolos.get(i).getValor();
+
+        // não achou
         return "";
     }
+
     private String GetValorToken(Token token)
     {
         if(token.getToken().equals("t_identificador"))

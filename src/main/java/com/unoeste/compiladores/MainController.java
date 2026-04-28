@@ -1,6 +1,9 @@
 package com.unoeste.compiladores;
 
 import com.unoeste.compiladores.entities.*;
+import com.unoeste.compiladores.phases.Lexica;
+import com.unoeste.compiladores.phases.Semantica;
+import com.unoeste.compiladores.phases.Sintatico;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,8 +35,6 @@ public class MainController implements Initializable {
     public TableColumn<Token, String> colToken;
     public TableColumn<Token, Integer> colLinha;
     public TableColumn<Token, Integer> colColuna;
-    public TableColumn<Token, String> colTipo;
-    public TableColumn<Token, String> colValor;
     @FXML
     public TextArea logErro;
     @FXML
@@ -70,8 +71,6 @@ public class MainController implements Initializable {
         colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
         colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
         colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
-        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
-        colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
         //tableView.setItems(sucessos);
 
         //chama função a cada alteração no codeArea
@@ -163,6 +162,7 @@ public class MainController implements Initializable {
         limparCores();
         exibirLogErro(codeArea);
     }
+
     public void exibirLogErro(CodeArea codeArea)
     {
         int i = 0;
@@ -191,6 +191,7 @@ public class MainController implements Initializable {
             i++;
         }
     }
+
     private void limparCores()
     {
         int i = 0;
@@ -201,23 +202,21 @@ public class MainController implements Initializable {
         }
 
     }
-    public void colorirEnquantoDigita()
-    {
+
+    public void colorirEnquantoDigita() {
         tokensColoracao.clear();
 
         int tamanhoTexto = codeArea.getParagraphs().size();
 
-        for(int i = 0; i < tamanhoTexto; i++)
-        {
+        for (int i = 0; i < tamanhoTexto; i++) {
             String linha = codeArea.getParagraph(i).getText();
 
-            if(!linha.isEmpty())
-                lexica.separarCadeias(linha, i+1, tokensColoracao);
+            if (!linha.isEmpty())
+                lexica.separarCadeias(linha, i + 1, tokensColoracao);
         }
 
         coloracaoSintatica(tokensColoracao);
     }
-
 
     public void coloracaoSintatica(List<Token> list_tokens)
     {
