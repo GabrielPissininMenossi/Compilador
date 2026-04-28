@@ -4,8 +4,6 @@ import org.fxmisc.richtext.CodeArea;
 public class Token {
     private String token;
     private String lexema;
-//    private String tipo;
-//    private String valor;
     private int linha;
     private int coluna;
 

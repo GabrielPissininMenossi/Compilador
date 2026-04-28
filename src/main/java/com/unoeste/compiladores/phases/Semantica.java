@@ -17,12 +17,12 @@ public class Semantica
     private String tipoExpressao;
     private List<Simbolo> tabelaSimbolos;
 
-    public Semantica(Lexica lexica, List<Erro> erroList)
+    public Semantica(Lexica lexica, List<Erro> erroList, List<Simbolo> tabelaSimbolos)
     {
         this.lexica = lexica;
         this.erroList = erroList;
         this.tipoExpressao = "";
-        this.tabelaSimbolos = new ArrayList<>();
+        this.tabelaSimbolos = tabelaSimbolos;
     }
 
     public void analisarSemantico()
@@ -30,7 +30,6 @@ public class Semantica
         // Verificacao de Tipos
         int pos = 0;
         int indiceTokenIdentificador;
-        tabelaSimbolos.clear();
 
         do
         {
@@ -114,19 +113,6 @@ public class Semantica
 
         } while (indiceTokenIdentificador != -1);
 
-        // Verificação de Não Utilização
-        // Reconhecer identificadores sem valores
-//        for(Token token : lexica.getTokens())
-//        {
-//            if(token.getToken().equals("t_identificador") && token.getValor().isEmpty())
-//            {
-//                //erro semântico -> variável nunca utilizada
-//                Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' nunca utilizado.\n",
-//                        token.getLinha(), token.getColuna(), token.getLexema()),
-//                        token.getLinha(), token.getColuna());
-//                erroList.add(erro);
-//            }
-//        }
         for(Simbolo simbolo : tabelaSimbolos)
         {
             if(simbolo.getValor().isEmpty())
@@ -236,9 +222,7 @@ public class Semantica
                      break;
                 default: pilha.push(elemento);
             }
-            
         }
-
         return pilha.pop().getString(); // int ou double ou float
     }
 

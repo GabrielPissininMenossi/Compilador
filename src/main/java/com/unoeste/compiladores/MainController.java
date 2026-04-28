@@ -4,6 +4,7 @@ import com.unoeste.compiladores.entities.*;
 import com.unoeste.compiladores.phases.Lexica;
 import com.unoeste.compiladores.phases.Semantica;
 import com.unoeste.compiladores.phases.Sintatico;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -35,6 +36,11 @@ public class MainController implements Initializable {
     public TableColumn<Token, String> colToken;
     public TableColumn<Token, Integer> colLinha;
     public TableColumn<Token, Integer> colColuna;
+
+    public TableView<Simbolo> tableViewSimbolos;
+    public TableColumn<Simbolo, String> colVariavel;
+    public TableColumn<Simbolo, String> colTipo;
+    public TableColumn<Simbolo, String> colValor;
     @FXML
     public TextArea logErro;
     @FXML
@@ -43,6 +49,7 @@ public class MainController implements Initializable {
     private CodeArea codeArea;
 
     private ObservableList<Token> sucessos = FXCollections.observableArrayList();
+    private ObservableList<Simbolo> tabelaSimbolos = FXCollections.observableArrayList();
 
     private Lexica lexica;
     private boolean claro = true;
@@ -71,6 +78,16 @@ public class MainController implements Initializable {
         colLexema.setCellValueFactory(new PropertyValueFactory<>("lexema"));
         colLinha.setCellValueFactory(new PropertyValueFactory<>("linha"));
         colColuna.setCellValueFactory(new PropertyValueFactory<>("coluna"));
+
+        //tabela de simbolos
+        tableViewSimbolos.setPlaceholder(new Label(""));
+        colVariavel.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getToken().getLexema())
+        );
+        colTipo.setCellValueFactory(new PropertyValueFactory<>("tipo"));
+        colValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        tableViewSimbolos.setItems(tabelaSimbolos);
+
         //tableView.setItems(sucessos);
 
         //chama função a cada alteração no codeArea
@@ -130,6 +147,7 @@ public class MainController implements Initializable {
     public void onAnalisarLexico(ActionEvent actionEvent)
     {
         sucessos.clear();
+        tabelaSimbolos.clear();
         lexica.limparListas();
         logErro.clear();
 
@@ -156,9 +174,11 @@ public class MainController implements Initializable {
         Sintatico sintatico = new Sintatico(lexica, erroList);
         sintatico.analisarSintatico();
 
-        Semantica semantica = new Semantica(lexica, erroList);
+        Semantica semantica = new Semantica(lexica, erroList, tabelaSimbolos);
         if (erroList.size() == 1)
             semantica.analisarSemantico();
+        tableViewSimbolos.setItems(tabelaSimbolos);
+
         limparCores();
         exibirLogErro(codeArea);
     }

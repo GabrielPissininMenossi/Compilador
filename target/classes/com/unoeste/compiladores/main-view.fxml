@@ -9,49 +9,73 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane minHeight="600.0" minWidth="1024.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unoeste.compiladores.MainController">
+<BorderPane minHeight="600.0" minWidth="1024.0" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.unoeste.compiladores.MainController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <menus>
                 <Menu mnemonicParsing="false" text="Arquivo">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#onAbrir" text="Abrir" />
-                        <MenuItem mnemonicParsing="false" onAction="#onSalvar" text="Salvar" />
+                        <MenuItem mnemonicParsing="false" onAction="#onAbrir" text="Abrir"/>
+                        <MenuItem mnemonicParsing="false" onAction="#onSalvar" text="Salvar"/>
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Sobre" />
-            <Menu mnemonicParsing="false" text="Programa">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#onAnalisarLexico" text="Analisar Léxico" />
-              </items>
-            </Menu>
-            <Menu mnemonicParsing="false" text="Aparência">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#onClaro" text="Claro" />
-                  <MenuItem mnemonicParsing="false" onAction="#onEscuro" text="Escuro" />
-               </items>
-            </Menu>
+                <Menu mnemonicParsing="false" text="Sobre"/>
+                <Menu mnemonicParsing="false" text="Programa">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onAnalisarLexico" text="Analisar Léxico"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Aparência">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onClaro" text="Claro"/>
+                        <MenuItem mnemonicParsing="false" onAction="#onEscuro" text="Escuro"/>
+                    </items>
+                </Menu>
             </menus>
         </MenuBar>
     </top>
     <center>
-        <StackPane fx:id="editor" prefHeight="431.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
+        <StackPane fx:id="editor" prefHeight="431.0" prefWidth="800.0" BorderPane.alignment="CENTER"/>
     </center>
-   <bottom>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <left>
-            <TableView fx:id="tableView" prefHeight="200.0" prefWidth="405.0" BorderPane.alignment="CENTER">
-              <columns>
-                <TableColumn fx:id="colLexema" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Lexema" />
-                <TableColumn fx:id="colToken" editable="false" prefWidth="118.0" resizable="false" sortable="false" text="Token" />
-                  <TableColumn fx:id="colLinha" editable="false" prefWidth="87.0" resizable="false" sortable="false" text="Linha" />
-                  <TableColumn fx:id="colColuna" editable="false" prefWidth="81.0" resizable="false" sortable="false" text="Coluna" />
-              </columns>
-            </TableView>
-         </left>
-         <right>
-            <TextArea fx:id="logErro" editable="false" prefHeight="200.0" prefWidth="619.0" BorderPane.alignment="CENTER" />
-         </right>
-      </BorderPane>
-   </bottom>
+    <bottom>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <left>
+                <TableView fx:id="tableView" prefHeight="200.0" prefWidth="322.0" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn fx:id="colLexema" editable="false" prefWidth="106.0" resizable="false"
+                                     sortable="false" text="Lexema"/>
+                        <TableColumn fx:id="colToken" editable="false" prefWidth="104.0" resizable="false"
+                                     sortable="false" text="Token"/>
+                        <TableColumn fx:id="colLinha" editable="false" prefWidth="55.0" resizable="false"
+                                     sortable="false" text="Linha"/>
+                        <TableColumn fx:id="colColuna" editable="false" prefWidth="56.0" resizable="false"
+                                     sortable="false" text="Coluna"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </left>
+            <right>
+                <TextArea fx:id="logErro" editable="false" prefHeight="200.0" prefWidth="455.0"
+                          BorderPane.alignment="CENTER"/>
+            </right>
+            <center>
+                <TableView fx:id="tableViewSimbolos" prefHeight="200.0" prefWidth="204.0" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn fx:id="colVariavel" editable="false" sortable="false" reorderable="false"
+                                     prefWidth="75.0" text="Variavel"/>
+                        <TableColumn fx:id="colTipo" editable="false" sortable="false" reorderable="false"
+                                     prefWidth="75.0" text="Tipo"/>
+                        <TableColumn fx:id="colValor" editable="false" sortable="false" reorderable="false"
+                                     prefWidth="75.0" text="Valor"/>
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+                </TableView>
+            </center>
+        </BorderPane>
+    </bottom>
 </BorderPane>
