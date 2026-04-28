@@ -128,6 +128,18 @@ public class Semantica
         OrdenarListaErros();
     }
 
+
+    private int prioridade(String op)
+    {
+        //número maior igual a  maior prioridade
+        if(op.equals("+") || op.equals("-"))
+            return 1;
+        else if(op.equals("*") || op.equals("/") || op.equals("%"))
+            return 2;
+        else
+            return 0;//0 pois quando encontra ( não retira da pilha
+    }
+
     private List<String> FormarExpressaoPosFixa(int indiceTokenIdentificador)
     {
         List<Token> expressaoInFixa = FormarExpressao(indiceTokenIdentificador);
@@ -139,19 +151,18 @@ public class Semantica
             String elemento = GetValorToken(expressaoInFixa.get(i++));
             switch (elemento)
             {
+                //igual if com ||
                 case "+":
-                    pilha.push(elemento);
-                    break;
                 case "-":
-                    pilha.push(elemento);
-                    break;
                 case "*":
-                    pilha.push(elemento);
-                    break;
                 case "/":
-                    pilha.push(elemento);
-                    break;
                 case "%":
+                    //Se o operador do topo for diferente de ( e tem prioridade maior ou igual, resolve ele primeiro
+                    while (!pilha.isEmpty() && !pilha.top().getString().equals("(") &&
+                            prioridade(pilha.top().getString()) >= prioridade(elemento))
+                    {
+                        expressaoPosFixa.add(pilha.pop().getString());
+                    }
                     pilha.push(elemento);
                     break;
                 case "(":
