@@ -158,7 +158,8 @@ public class MainController implements Initializable {
         sintatico.analisarSintatico();
 
         Semantica semantica = new Semantica(lexica, erroList);
-        semantica.analisarSemantico();
+        if (erroList.size() == 1)
+            semantica.analisarSemantico();
         limparCores();
         exibirLogErro(codeArea);
     }
