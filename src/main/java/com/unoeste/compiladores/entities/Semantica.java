@@ -1,5 +1,6 @@
 package com.unoeste.compiladores.entities;
 
+import com.unoeste.compiladores.entities.Pilhas.NoPilha;
 import com.unoeste.compiladores.entities.Pilhas.Pilha;
 
 import java.util.ArrayList;
@@ -10,13 +11,13 @@ public class Semantica
 {
     private Lexica lexica;
     private List<Erro> erroList;
-    private List<Token> visitados;
     private List<String> list_tipos = new ArrayList<>(Arrays.asList("t_void", "t_char", "t_int", "t_float", "t_double"));
-
+    private String tipoExpressao;
     public Semantica(Lexica lexica, List<Erro> erroList)
     {
         this.lexica = lexica;
         this.erroList = erroList;
+        this.tipoExpressao = "";
     }
 
     public void analisarSemantico()
@@ -46,12 +47,10 @@ public class Semantica
 
                     if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
                     {
-                        // Mudar o valor do identificador
-                        String tipoExpressao = "";
-                        String valor = ResolveExpressao(indiceTokenIdentificador, tipoExpressao);
+                        String valor2 = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
                         if(id.getTipo().equals(tipoExpressao))
                         {
-                            id.setValor(valor);
+                           id.setValor(valor2);
                         }
                         else
                         {
@@ -72,11 +71,10 @@ public class Semantica
                     if (isAtribuicao(indiceTokenIdentificador)) // int matheus = 10;
                     {
                         // Mudar o valor do identificador
-                        String tipoExpressao = "";
-                        String valor = ResolveExpressao(indiceTokenIdentificador, tipoExpressao);
-                        if(id.getTipo().equals(tipoExpressao))
+                        String valor2 = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+                        if(id.getTipo().equals(tipoExpressao) || (id.getTipo().equals("float") && tipoExpressao.equals("double")))
                         {
-                            id.setValor(valor);
+                            id.setValor(valor2);
                         }
                         else
                         {
@@ -108,6 +106,125 @@ public class Semantica
         }
 
         OrdenarListaErros();
+    }
+
+    private List<String> FormarExpressaoPosFixa(int indiceTokenIdentificador)
+    {
+        List<Token> expressaoInFixa = FormarExpressao(indiceTokenIdentificador);
+        List<String> expressaoPosFixa = new ArrayList<>();
+        Pilha pilha = new Pilha();
+        int i = 0;
+        while (i < expressaoInFixa.size())
+        {
+            String elemento = GetValorToken(expressaoInFixa.get(i++));
+            switch (elemento)
+            {
+                case "+":
+                    pilha.push(elemento);
+                    break;
+                case "-":
+                    pilha.push(elemento);
+                    break;
+                case "*":
+                    pilha.push(elemento);
+                    break;
+                case "/":
+                    pilha.push(elemento);
+                    break;
+                case "%":
+                    pilha.push(elemento);
+                    break;
+                case "(":
+                    pilha.push(elemento);
+                    break;
+                case ")":
+
+                    String aux;
+                    do
+                    {
+                        aux = pilha.pop().getString();
+                        if (!aux.equals("("))
+                        {
+                            expressaoPosFixa.add(aux);
+                        }
+                    } while (!pilha.isEmpty() && !aux.equals("("));
+
+                    break;
+                default: expressaoPosFixa.add(elemento);
+            }
+        }
+        while (!pilha.isEmpty())
+        {
+            String aux = pilha.pop().getString();
+            expressaoPosFixa.add(aux);
+        }
+        return expressaoPosFixa;
+
+    }
+    private String meuResolveExpressaoPosFixa(int indiceTokenIdentificador)
+    {
+        List<String> expressaoPosFixa = FormarExpressaoPosFixa(indiceTokenIdentificador);
+        tipoExpressao = identificarTipoExpressaoPosFixa(expressaoPosFixa);
+        Pilha pilha = new Pilha();
+        String num1, num2;
+        int i = 0;
+        while (i < expressaoPosFixa.size())
+        {
+            String elemento = expressaoPosFixa.get(i++);
+
+            switch (elemento)
+            {
+                case "+":
+                     num2 = pilha.pop().getString();
+                     num1 = pilha.pop().getString();
+                     pilha.push(calculaExpressao3Op(num1, num2, "+"));
+                     break;
+                case "-":
+                     num2 = pilha.pop().getString();
+                     num1 = pilha.pop().getString();
+                     pilha.push(calculaExpressao3Op(num1, num2, "-"));
+                     break;
+                case "/":
+                    num2 = pilha.pop().getString();
+                    num1 = pilha.pop().getString();
+                    pilha.push(calculaExpressao3Op(num1, num2, "/"));
+                     break;
+                case "*":
+                     num2 = pilha.pop().getString();
+                     num1 = pilha.pop().getString();
+                     pilha.push(calculaExpressao3Op(num1, num2, "*"));
+                     break;
+                case "%":
+                     num2 = pilha.pop().getString();
+                     num1 = pilha.pop().getString();
+                     pilha.push(calculaExpressao3Op(num1, num2, "%"));
+                     break;
+                default: pilha.push(elemento);
+            }
+            
+        }
+
+        return pilha.pop().getString(); // int ou double ou float
+    }
+
+    private boolean isDouble(String string)
+    {
+        return string.contains(".");
+    }
+
+    private String identificarTipoExpressaoPosFixa(List<String> expressaoPosFixa)
+    {
+        for (int i = 0; i < expressaoPosFixa.size(); i++)
+        {
+            String aux = expressaoPosFixa.get(i);
+            if(aux.contains(".")) // double, float
+            {
+                return "double";
+            }
+
+        }
+        return "int";
+
     }
 
     private void setarTipo(int indiceTokenIdentificador)
@@ -183,7 +300,12 @@ public class Semantica
             // verificar valor, dps
             Token token = tokenList.get(indiceTokenIdentificador);
             Token tokenValor = tokenList.get(indiceTokenIdentificador + 2);
-            token.setValor(tokenValor.getLexema());
+            if (tokenValor.getToken().equals("t_identificador"))
+            {
+                token.setValor(buscarValorIdentificador(tokenValor));
+            }
+            else
+                token.setValor(tokenValor.getLexema());
             return true;
         }
         return false;
@@ -201,12 +323,6 @@ public class Semantica
         return -1;
     }
 
-    private String ResolveExpressao(int indiceTokenIdentificador, String tipoExpressao)
-    {
-        List<Token> expressaoPolonesa = FormarExpressao(indiceTokenIdentificador);
-        return ResolveExpressaoPolonesa(expressaoPolonesa, tipoExpressao);
-    }
-
     private List<Token> FormarExpressao(int indiceTokenIdentificador)
     {
         List<Token> expressaoPolonesa = new ArrayList<>();
@@ -219,159 +335,81 @@ public class Semantica
         return expressaoPolonesa;
     }
 
-    private String ResolveExpressaoPolonesa(List<Token> expressaoPolonesa, String tipoExpressao)
-    {
-        Pilha pilhaOperadores = new Pilha();
-        Pilha pilhaNumeros = new Pilha();
-        int i=0;
-
-        pilhaNumeros.push(GetValorToken(expressaoPolonesa.get(i++)));
-        while(!pilhaNumeros.isEmpty() && i < expressaoPolonesa.size())
-        {
-            String valorToken = GetValorToken(expressaoPolonesa.get(i++));
-            if(isOperador(valorToken))
-            {
-                if(valorToken.equals("("))
-                    pilhaOperadores.push("(");
-                else if(valorToken.equals(")"))
-                {
-                    resolveAteAbreParenteses(pilhaNumeros, pilhaOperadores);
-                }
-                else if(temMaiorPrecedencia(valorToken, pilhaOperadores.top().getString()))
-                {
-                    pilhaOperadores.push(valorToken);
-                }
-                else if(temIgualOuMenorPrecedencia(valorToken, pilhaOperadores.top().getString()))
-                {
-                    if(!pilhaOperadores.top().getString().equals("("))
-                    {
-                        //realizar o cálculo com dois valores desempilhados da pilha de Operadores
-                        String numero2 = pilhaNumeros.pop().getString();
-                        String numero1 = pilhaNumeros.pop().getString();
-                        String operador = pilhaOperadores.pop().getString();
-
-                        //calcular a expressão com 3 operadores
-                        pilhaNumeros.push(calculaExpressao3Op(numero1, numero2, operador)); // --> "operador" será o operador em questão
-                    }
-
-                    //empilho o operador que está chegando
-                    pilhaOperadores.push(valorToken);
-                }
-            }
-            else if(isNumero(valorToken))
-                pilhaNumeros.push(valorToken);
-        }
-        resolveAteAcabar(pilhaNumeros, pilhaOperadores);
-
-        return pilhaNumeros.pop().getString();
-    }
-
-    private boolean temMaiorPrecedencia(String operador, String operadorEmpilhado)
-    {
-        //Ordem:
-        // ( )
-        // * / %
-        // + -
-
-        if(operador.equals("(") || operador.equals(")"))
-        {
-            return !operadorEmpilhado.equals("(") && !operadorEmpilhado.equals(")");
-        }
-        if( (operador.equals("*") || operador.equals("/") || operador.equals("%")) &&
-                (operadorEmpilhado.equals("+") || operadorEmpilhado.equals("-")))
-            return true;
-
-        return false;
-    }
-
-    private boolean temIgualOuMenorPrecedencia(String operador, String operadorEmpilhado)
-    {
-        // ( )
-        // * / %
-        // + -
-
-        if(operadorEmpilhado.equals("*") || operadorEmpilhado.equals("/") || operadorEmpilhado.equals("%"))
-        {
-            return !operador.equals("(") || !operador.equals(")");
-        }
-        if(operadorEmpilhado.equals("+") || operadorEmpilhado.equals("-"))
-        {
-            return operador.equals("+") || operador.equals("-");
-        }
-
-        // -> os dois são '*'
-        return true;
-    }
-
     private String calculaExpressao3Op(String numero1, String numero2, String valorToken)
     {
-        //desenvolver
+        if (isDouble(numero1) || isDouble(numero2))
+        {
+            double num1 = Double.parseDouble(numero1);
+            double num2 = Double.parseDouble(numero2);
+            double res = 0.0;
+            switch (valorToken)
+            {
+                case "+":
+                    res = num1 + num2;
+                    break;
+                case "-":
+                    res = num1 - num2;
+                    break;
+                case "*":
+                    res = num1 * num2;
+                    break;
+                case "/":
+                    res = num1 / num2;
+                    break;
+                case "%":
+                    res = num1 % num2;
+                    break;
+            }
+            return String.valueOf(res);
+        }
+        else
+        {
+            int num1 = Integer.parseInt(numero1);
+            int num2 = Integer.parseInt(numero2);
+            int res = 0;
+            switch (valorToken)
+            {
+                case "+":
+                    res = num1 + num2;
+                    break;
+                case "-":
+                    res = num1 - num2;
+                    break;
+                case "*":
+                    res = num1 * num2;
+                    break;
+                case "/":
+                    res = num1 / num2;
+                    break;
+                case "%":
+                    res = num1 % num2;
+                    break;
+            }
+            return String.valueOf(res);
+        }
+
+    }
+
+    private String buscarValorIdentificador(Token token)
+    {
+        List<Token> tokenList = lexica.getTokens();
+        int pos = tokenList.indexOf(token);
+        pos--;
+        while (pos > 0 && !tokenList.get(pos).getLexema().equals(token.getLexema()))
+            pos--;
+        if (pos > 0)
+        {
+            return tokenList.get(pos).getValor();
+        }
         return "";
     }
-
-    private void resolveAteAbreParenteses(Pilha pilhaNumeros, Pilha pilhaOperadores)
-    {
-        String operador = pilhaOperadores.pop().getString();
-        while(!operador.equals("("))
-        {
-            //realizar o cálculo com dois valores desempilhados da pilha de Operadores
-            String numero2 = pilhaNumeros.pop().getString();
-            String numero1 = pilhaNumeros.pop().getString();
-
-            //calcular a expressão com 3 operadores
-            pilhaNumeros.push(calculaExpressao3Op(numero1, numero2, operador)); // --> "operador" será o operador em questão
-
-            //desempilha o operador
-            operador = pilhaOperadores.pop().getString();
-        }
-    }
-
-    private void resolveAteAcabar(Pilha pilhaNumeros, Pilha pilhaOperadores)
-    {
-        if(!pilhaOperadores.isEmpty())
-        {
-            do{
-                //realizar o cálculo com dois valores desempilhados da pilha de Operadores
-                String numero2 = pilhaNumeros.pop().getString();
-                String numero1 = pilhaNumeros.pop().getString();
-                String operador = pilhaOperadores.pop().getString();
-
-                //calcular a expressão com 3 operadores
-                pilhaNumeros.push(calculaExpressao3Op(numero1, numero2, operador)); // --> "operador" será o operador em questão
-            } while(!pilhaOperadores.isEmpty());
-        }
-    }
-
-    private boolean isOperador(String token)
-    {
-        return switch (token) {
-            case "+" -> true;
-            case "-" -> true;
-            case "*" -> true;
-            case "/" -> true;
-            case "%" -> true;
-            default -> false;
-        };
-    }
-
-    private boolean isNumero(String token)
-    {
-        return !switch (token) {
-            case "+" -> true;
-            case "-" -> true;
-            case "*" -> true;
-            case "/" -> true;
-            case "%" -> true;
-            case "(" -> true;
-            case ")" -> true;
-            default -> false;
-        };
-    }
-
     private String GetValorToken(Token token)
     {
         if(token.getToken().equals("t_identificador"))
-            return token.getValor();
+        {
+            return buscarValorIdentificador(token);
+        }
+
         return token.getLexema();
     }
 
