@@ -54,28 +54,117 @@ public class Semantica
                     if (isAtribuicao(indiceTokenIdentificador)) // matheus = 10;
                     {
                         // MUDAR O VALOR DO IDENTIFICADOR
-
-                        // resolvo a expressão logo após o sinal de atribuição
-                        String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
-
-                        // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
-                        Simbolo simbolo = GetSimboloWithThisToken(id);
-
-                        // se o tipo coincidir, então seto o novo valor
-                        if(simbolo != null && simbolo.getTipo().equals(tipoExpressao))
+                        if (isChar(indiceTokenIdentificador)) // char ou string
                         {
-                           simbolo.setValor(valorExpressao);
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+                            if (simbolo != null)
+                            {
+                                if (indiceTokenIdentificador + 3 < lexica.getTokens().size() && lexica.getToken(indiceTokenIdentificador + 3).getToken().equals("t_pontoVirgula"))
+                                {
+
+                                    if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_cadeiaCaracterChar"))
+                                    {
+                                        simbolo.setValor(lexica.getToken(indiceTokenIdentificador+2).getLexema());
+                                    }
+                                    else if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_identificador"))
+                                    {
+                                        Simbolo aux = GetSimboloWithThisToken(lexica.getToken(indiceTokenIdentificador + 2));
+                                        if (aux != null && simbolo.getTipo().equals(aux.getTipo()))
+                                            simbolo.setValor(buscarValorIdentificador(lexica.getToken(indiceTokenIdentificador + 2)));
+                                        else
+                                        {
+                                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                    id.getLinha(), id.getColuna());
+                                            erroList.add(erro);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
+                                else
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
+                        }
+                        else
+                        if (isString(indiceTokenIdentificador))
+                        {
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+                            if (simbolo != null)
+                            {
+                                if (indiceTokenIdentificador + 3 < lexica.getTokens().size() && lexica.getToken(indiceTokenIdentificador + 3).getToken().equals("t_pontoVirgula"))
+                                {
+                                    if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_cadeiaCaracterString"))
+                                    {
+                                        simbolo.setValor(lexica.getToken(indiceTokenIdentificador+2).getLexema());
+                                    }
+                                    else if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_identificador"))
+                                    {
+                                        Simbolo aux = GetSimboloWithThisToken(lexica.getToken(indiceTokenIdentificador + 2));
+                                        if (aux != null && simbolo.getTipo().equals(aux.getTipo()))
+                                            simbolo.setValor(buscarValorIdentificador(lexica.getToken(indiceTokenIdentificador + 2)));
+                                        else
+                                        {
+                                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                    id.getLinha(), id.getColuna());
+                                            erroList.add(erro);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
+                                else
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
                         }
                         else
                         {
-                            //erro semântico -> tipo incorreto retornado
+                            // resolvo a expressão logo após o sinal de atribuição
+                            String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
 
-                            assert simbolo != null; // --> garante que simbolo não pode ser nulo
-                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
-                                    id.getLinha(), id.getColuna());
-                            erroList.add(erro);
+                            // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+
+                            // se o tipo coincidir, então seto o novo valor
+                            if(simbolo != null && simbolo.getTipo().equals(tipoExpressao))
+                            {
+                                simbolo.setValor(valorExpressao);
+                            }
+                            else
+                            {
+                                //erro semântico -> tipo incorreto retornado
+
+                                if (!tipoExpressao.isEmpty())
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
                         }
+
                     }
                 }
                 else
@@ -88,25 +177,115 @@ public class Semantica
                     {
                         // MUDAR O VALOR DO IDENTIFICADOR
 
-                        // resolvo a expressão logo após o sinal de atribuição
-                        String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
-
-                        // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
-                        Simbolo simbolo = GetSimboloWithThisToken(id);
-
-                        if(simbolo != null && simbolo.getTipo().equals(tipoExpressao) || (simbolo.getTipo().equals("float") && tipoExpressao.equals("double")))
+                        if (isChar(indiceTokenIdentificador)) // char ou string
                         {
-                            simbolo.setValor(valorExpressao);
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+                            if (simbolo != null)
+                            {
+                                if (indiceTokenIdentificador + 3 < lexica.getTokens().size() && lexica.getToken(indiceTokenIdentificador + 3).getToken().equals("t_pontoVirgula"))
+                                {
+
+                                    if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_cadeiaCaracterChar"))
+                                    {
+                                        simbolo.setValor(lexica.getToken(indiceTokenIdentificador+2).getLexema());
+                                    }
+                                    else if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_identificador"))
+                                    {
+                                        Simbolo aux = GetSimboloWithThisToken(lexica.getToken(indiceTokenIdentificador + 2));
+                                        if (aux != null && simbolo.getTipo().equals(aux.getTipo()))
+                                            simbolo.setValor(buscarValorIdentificador(lexica.getToken(indiceTokenIdentificador + 2)));
+                                        else
+                                        {
+                                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                    id.getLinha(), id.getColuna());
+                                            erroList.add(erro);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
+                                else
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
+                        }
+                        else
+                        if (isString(indiceTokenIdentificador))
+                        {
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+                            if (simbolo != null)
+                            {
+                                if (indiceTokenIdentificador + 3 < lexica.getTokens().size() && lexica.getToken(indiceTokenIdentificador + 3).getToken().equals("t_pontoVirgula"))
+                                {
+                                    if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_cadeiaCaracterString"))
+                                    {
+                                        simbolo.setValor(lexica.getToken(indiceTokenIdentificador+2).getLexema());
+                                    }
+                                    else if (lexica.getToken(indiceTokenIdentificador + 2).getToken().equals("t_identificador"))
+                                    {
+                                        Simbolo aux = GetSimboloWithThisToken(lexica.getToken(indiceTokenIdentificador + 2));
+                                        if (aux != null && simbolo.getTipo().equals(aux.getTipo()))
+                                            simbolo.setValor(buscarValorIdentificador(lexica.getToken(indiceTokenIdentificador + 2)));
+                                        else
+                                        {
+                                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                    id.getLinha(), id.getColuna());
+                                            erroList.add(erro);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
+                                else
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo()),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
                         }
                         else
                         {
-                            //erro semântico -> tipo incorreto retornado
-                            assert simbolo != null;
-                            Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                    id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
-                                    id.getLinha(), id.getColuna());
-                            erroList.add(erro);
+                            // resolvo a expressão logo após o sinal de atribuição
+                            String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+
+                            // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
+                            Simbolo simbolo = GetSimboloWithThisToken(id);
+
+                            if(simbolo != null && simbolo.getTipo().equals(tipoExpressao) || (simbolo.getTipo().equals("float") && tipoExpressao.equals("double")))
+                            {
+                                simbolo.setValor(valorExpressao);
+                            }
+                            else
+                            {
+                                //erro semântico -> tipo incorreto retornado
+                                if (!tipoExpressao.isEmpty())
+                                {
+                                    Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                            id.getLinha(), id.getColuna());
+                                    erroList.add(erro);
+                                }
+                            }
                         }
+
                     }
                 }
             }
@@ -126,6 +305,26 @@ public class Semantica
         }
 
         OrdenarListaErros();
+    }
+
+    private boolean isString(int indiceTokenIdentificador)
+    {
+        Token token = lexica.getToken(indiceTokenIdentificador);
+        Simbolo simbolo = GetSimboloWithThisToken(token);
+
+        if (simbolo != null && simbolo.getTipo().equals("char[]"))
+            return true;
+        return false;
+    }
+
+    private boolean isChar(int indiceTokenIdentificador)
+    {
+        Token token = lexica.getToken(indiceTokenIdentificador);
+        Simbolo simbolo = GetSimboloWithThisToken(token);
+
+        if (simbolo != null && simbolo.getTipo().equals("char"))
+            return true;
+        return false;
     }
 
 
@@ -148,7 +347,16 @@ public class Semantica
         int i = 0;
         while (i < expressaoInFixa.size())
         {
-            String elemento = GetValorToken(expressaoInFixa.get(i++));
+            Token token = expressaoInFixa.get(i++);
+            String elemento = GetValorToken(token);
+            if (elemento.isEmpty())
+            {
+                Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' não inicializado.\n",
+                        token.getLinha(), token.getColuna(), token.getLexema()),
+                        token.getLinha(), token.getColuna());
+                erroList.add(erro);
+                return null;
+            }
             switch (elemento)
             {
                 //igual if com ||
@@ -196,45 +404,51 @@ public class Semantica
     private String meuResolveExpressaoPosFixa(int indiceTokenIdentificador)
     {
         List<String> expressaoPosFixa = FormarExpressaoPosFixa(indiceTokenIdentificador);
-        tipoExpressao = identificarTipoExpressaoPosFixa(expressaoPosFixa);
-        Pilha pilha = new Pilha();
-        String num1, num2;
-        int i = 0;
-        while (i < expressaoPosFixa.size())
+        if (expressaoPosFixa != null)
         {
-            String elemento = expressaoPosFixa.get(i++);
-
-            switch (elemento)
+            tipoExpressao = identificarTipoExpressaoPosFixa(expressaoPosFixa);
+            Pilha pilha = new Pilha();
+            String num1, num2;
+            int i = 0;
+            while (i < expressaoPosFixa.size())
             {
-                case "+":
-                     num2 = pilha.pop().getString();
-                     num1 = pilha.pop().getString();
-                     pilha.push(calculaExpressao3Op(num1, num2, "+"));
-                     break;
-                case "-":
-                     num2 = pilha.pop().getString();
-                     num1 = pilha.pop().getString();
-                     pilha.push(calculaExpressao3Op(num1, num2, "-"));
-                     break;
-                case "/":
-                    num2 = pilha.pop().getString();
-                    num1 = pilha.pop().getString();
-                    pilha.push(calculaExpressao3Op(num1, num2, "/"));
-                     break;
-                case "*":
-                     num2 = pilha.pop().getString();
-                     num1 = pilha.pop().getString();
-                     pilha.push(calculaExpressao3Op(num1, num2, "*"));
-                     break;
-                case "%":
-                     num2 = pilha.pop().getString();
-                     num1 = pilha.pop().getString();
-                     pilha.push(calculaExpressao3Op(num1, num2, "%"));
-                     break;
-                default: pilha.push(elemento);
+                String elemento = expressaoPosFixa.get(i++);
+
+                switch (elemento)
+                {
+                    case "+":
+                        num2 = pilha.pop().getString();
+                        num1 = pilha.pop().getString();
+                        pilha.push(calculaExpressao3Op(num1, num2, "+"));
+                        break;
+                    case "-":
+                        num2 = pilha.pop().getString();
+                        num1 = pilha.pop().getString();
+                        pilha.push(calculaExpressao3Op(num1, num2, "-"));
+                        break;
+                    case "/":
+                        num2 = pilha.pop().getString();
+                        num1 = pilha.pop().getString();
+                        pilha.push(calculaExpressao3Op(num1, num2, "/"));
+                        break;
+                    case "*":
+                        num2 = pilha.pop().getString();
+                        num1 = pilha.pop().getString();
+                        pilha.push(calculaExpressao3Op(num1, num2, "*"));
+                        break;
+                    case "%":
+                        num2 = pilha.pop().getString();
+                        num1 = pilha.pop().getString();
+                        pilha.push(calculaExpressao3Op(num1, num2, "%"));
+                        break;
+                    default: pilha.push(elemento);
+                }
             }
+            if (!pilha.isEmpty())
+                return pilha.pop().getString(); // int ou double ou float
         }
-        return pilha.pop().getString(); // int ou double ou float
+
+        return "";
     }
 
     private boolean isDouble(String string)
@@ -260,11 +474,24 @@ public class Semantica
     {
         Token tokenTipo = buscarTipoVariavelInicializacao(indiceTokenIdentificador);
         Token tokenAtual = lexica.getToken(indiceTokenIdentificador);
-
+        String lexema = "";
         if (tokenTipo != null)
         {
+            if (tokenTipo.getToken().equals("t_char"))
+            {
+                int pos = lexica.getTokens().indexOf(tokenTipo);
+                if (pos + 1 < lexica.getTokens().size() && lexica.getToken(pos + 1).getToken().equals("t_abreColchete"))
+                    lexema = "char[]";
+                else
+                    lexema = "char";
+            }
+            else
+            {
+                lexema = tokenTipo.getLexema();
+
+            }
+            tabelaSimbolos.add(new Simbolo(tokenAtual, lexema, ""));
             //adicionar o token com o seu tipo na tabela de símbolos
-            tabelaSimbolos.add(new Simbolo(tokenAtual, tokenTipo.getLexema(), ""));
         }
         else
         {
@@ -362,6 +589,7 @@ public class Semantica
             {
                 // pego o valor do próximo token
                 String valor = buscarValorIdentificador(tokenValor);
+
 
                 // seto o valor do "token" para o valor encontrado do "tokenValor"
                 setarValor(token, valor);

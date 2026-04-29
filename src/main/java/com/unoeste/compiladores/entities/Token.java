@@ -13,8 +13,6 @@ public class Token {
         this.lexema = lexema;
         this.linha = linha;
         this.coluna = coluna;
-//        this.tipo = "";
-//        this.valor = "";
     }
 
     public Token() {
@@ -56,22 +54,6 @@ public class Token {
     {
         this.lexema = lexema;
     }
-
-//    public String getTipo() {
-//        return tipo;
-//    }
-//
-//    public void setTipo(String tipo) {
-//        this.tipo = tipo;
-//    }
-//
-//    public String getValor() {
-//        return valor;
-//    }
-//
-//    public void setValor(String valor) {
-//        this.valor = valor;
-//    }
 
     public int indiceInicialToken(String linha)
     {

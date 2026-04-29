@@ -110,7 +110,7 @@ public class Sintatico
             case "OPCAO_COLCHETE":
                 if (categoria.equals("t_abreColchete"))
                 {
-                    return Arrays.asList("[", "]");
+                    return Arrays.asList("[","]");
                 }
                 else
                 {
