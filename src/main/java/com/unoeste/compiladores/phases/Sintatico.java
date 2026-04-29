@@ -215,10 +215,19 @@ public class Sintatico
                     return Arrays.asList("!=");
                 break;
             case "EXPRESSAOARITMETICA":
-                return Arrays.asList("TERMO", "REPETICAO_EXPRESSAOARITMETICA");
+                return Arrays.asList("OPCAO_CASTING", "TERMO", "REPETICAO_EXPRESSAOARITMETICA");
+            case "OPCAO_CASTING":
+                if (categoria.equals("t_abreParentese")) //first
+                {
+                    return Arrays.asList("(", "TIPOVARIAVEL",")"); //TODAS AS PRODUÇÕES
+                }
+                else
+                {
+                    return Arrays.asList("$");
+                }
             case "REPETICAO_EXPRESSAOARITMETICA": // first
                 if (categoria.equals("t_adicao") || categoria.equals("t_subtracao"))
-                    return Arrays.asList(token.getLexema(), "TERMO", "REPETICAO_EXPRESSAOARITMETICA");
+                    return Arrays.asList(token.getLexema(), "OPCAO_CASTING", "TERMO", "REPETICAO_EXPRESSAOARITMETICA");
                 else
                     return Arrays.asList("$");
             case "TERMO":

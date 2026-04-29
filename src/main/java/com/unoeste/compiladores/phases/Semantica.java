@@ -292,6 +292,7 @@ public class Semantica
 
         } while (indiceTokenIdentificador != -1);
 
+        // verificação se a variável declarada está sendo usada em algum lugar
         for(Simbolo simbolo : tabelaSimbolos)
         {
             if(simbolo.getValor().isEmpty())
@@ -327,6 +328,13 @@ public class Semantica
         return false;
     }
 
+    private boolean isCasting(Token tokenTipo)
+    {
+        int indiceTokenTipo = lexica.getTokens().indexOf(tokenTipo);
+
+        return indiceTokenTipo-1>0 && lexica.getToken(indiceTokenTipo-1).getToken().equals("t_abreParentese") &&
+                indiceTokenTipo+1<lexica.getTokens().size() && lexica.getToken(indiceTokenTipo+1).getToken().equals("t_fechaParentese");
+    }
 
     private int prioridade(String op)
     {
@@ -341,7 +349,7 @@ public class Semantica
 
     private List<String> FormarExpressaoPosFixa(int indiceTokenIdentificador)
     {
-        List<Token> expressaoInFixa = FormarExpressao(indiceTokenIdentificador);
+        List<Token> expressaoInFixa = FormarExpressao(indiceTokenIdentificador); //pega tudo até o ';'
         List<String> expressaoPosFixa = new ArrayList<>();
         Pilha pilha = new Pilha();
         int i = 0;
@@ -616,10 +624,24 @@ public class Semantica
 
     private List<Token> FormarExpressao(int indiceTokenIdentificador)
     {
+        List<String> expInfixa = new ArrayList<>();
+
         List<Token> expressaoPolonesa = new ArrayList<>();
         int i = indiceTokenIdentificador + 2;
         while(i < lexica.getTokens().size() && !lexica.getToken(i).getToken().equals("t_pontoVirgula"))
         {
+            Token token = lexica.getToken(i);
+            if(token.getToken().equals("t_abreParentese"))
+            {
+                int pos = lexica.getTokens().indexOf(token);
+                if(pos + 2 < lexica.getTokens().size())
+                {
+                    Token tipo = lexica.getToken(pos+1); // tipo
+                    Token fechaParentese = lexica.getToken(pos+2); //fecha parentese
+
+                    //if(tipo.getToken().equals())
+                }
+            }
             expressaoPolonesa.add(lexica.getToken(i));
             i++;
         }
