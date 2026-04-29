@@ -140,29 +140,38 @@ public class Semantica
                         }
                         else
                         {
-                            // resolvo a expressão logo após o sinal de atribuição
-                            String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
-
-                            // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
                             Simbolo simbolo = GetSimboloWithThisToken(id);
-
-                            // se o tipo coincidir, então seto o novo valor
-                            if(simbolo != null && simbolo.getTipo().equals(tipoExpressao))
+                            if (!contemCadeia(indiceTokenIdentificador))
                             {
-                                simbolo.setValor(valorExpressao);
+                                String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+
+                                if(simbolo != null && simbolo.getTipo().equals(tipoExpressao))
+                                {
+                                    simbolo.setValor(valorExpressao);
+                                }
+                                else
+                                {
+                                    if (!tipoExpressao.isEmpty())
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
                             }
                             else
                             {
-                                //erro semântico -> tipo incorreto retornado
-
-                                if (!tipoExpressao.isEmpty())
+                                if (simbolo != null)
                                 {
                                     Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), "Cadeia Caracter(es)"),
                                             id.getLinha(), id.getColuna());
                                     erroList.add(erro);
                                 }
                             }
+                            // resolvo a expressão logo após o sinal de atribuição
+
                         }
 
                     }
@@ -261,28 +270,40 @@ public class Semantica
                                 }
                             }
                         }
-                        else
+                        else // float, double ou int
                         {
-                            // resolvo a expressão logo após o sinal de atribuição
-                            String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
 
-                            // recupero o símbolo da minha tabela com o respectivo lexema do token em questão
                             Simbolo simbolo = GetSimboloWithThisToken(id);
-
-                            if(simbolo != null && simbolo.getTipo().equals(tipoExpressao) || (simbolo.getTipo().equals("float") && tipoExpressao.equals("double")))
+                            if (!contemCadeia(indiceTokenIdentificador))
                             {
-                                simbolo.setValor(valorExpressao);
+                                String valorExpressao = meuResolveExpressaoPosFixa(indiceTokenIdentificador);
+
+                                if(simbolo != null && (simbolo.getTipo().equals(tipoExpressao) || (simbolo.getTipo().equals("float") && tipoExpressao.equals("double"))))
+                                {
+                                    simbolo.setValor(valorExpressao);
+                                }
+                                else
+                                {
+                                    //erro semântico -> tipo incorreto retornado
+                                    if (simbolo != null && !tipoExpressao.isEmpty())
+                                    {
+                                        Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
+                                                id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                                id.getLinha(), id.getColuna());
+                                        erroList.add(erro);
+                                    }
+                                }
                             }
                             else
                             {
-                                //erro semântico -> tipo incorreto retornado
-                                if (!tipoExpressao.isEmpty())
+                                if (simbolo != null)
                                 {
                                     Erro erro = new Erro(String.format("[ERRO SEMÂNTICO] Linha %d, Coluna %d: Identificador '%s' esperava tipo '%s', mas retornado '%s'.\n",
-                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), tipoExpressao),
+                                            id.getLinha(), id.getColuna(), id.getLexema(), simbolo.getTipo(), "Cadeia Caracter(es)"),
                                             id.getLinha(), id.getColuna());
                                     erroList.add(erro);
                                 }
+
                             }
                         }
 
@@ -306,6 +327,36 @@ public class Semantica
         }
 
         OrdenarListaErros();
+    }
+
+    private boolean contemCadeia(int indiceTokenIdentificador)
+    {
+        List<Token> lista = FormarExpressao(indiceTokenIdentificador);
+        // cadeia de caracter e char
+        boolean achou = false;
+        int i = 0;
+        while (!achou && i < lista.size())
+        {
+            if (lista.get(i).getToken().equals("t_cadeiaCaracterChar") || lista.get(i).getToken().equals("t_cadeiaCaracterString"))
+                achou = true;
+            else
+            if (lista.get(i).getToken().equals("t_identificador"))
+            {
+                Simbolo simbolo = GetSimboloWithThisToken(lista.get(i));
+                if (simbolo != null) // ja declarado
+                {
+                    if (simbolo.getTipo().equals("char") || simbolo.getTipo().equals("char[]"))
+                        achou = true;
+                }
+            }
+            i++;
+
+
+        }
+        if (achou)
+            return true;
+        return false;
+
     }
 
     private boolean isString(int indiceTokenIdentificador)
@@ -587,23 +638,23 @@ public class Semantica
         List<Token> tokenList = lexica.getTokens();
         if (indiceTokenIdentificador + 1 < tokenList.size() && tokenList.get(indiceTokenIdentificador + 1).getToken().equals("t_igualAtribuicao"))
         {
-            // verificar valor, dps
-            Token token = tokenList.get(indiceTokenIdentificador);
-            Token tokenValor = tokenList.get(indiceTokenIdentificador + 2);
-
-
-            // esse if e else irá tratar o caso de quando existe apenas um token após o sinal de atribuição (não precisava ser implementado)
-            if (tokenValor.getToken().equals("t_identificador"))
-            {
-                // pego o valor do próximo token
-                String valor = buscarValorIdentificador(tokenValor);
-
-
-                // seto o valor do "token" para o valor encontrado do "tokenValor"
-                setarValor(token, valor);
-            }
-            else
-                setarValor(token, tokenValor.getLexema());
+//            // verificar valor, dps
+//            Token token = tokenList.get(indiceTokenIdentificador);
+//            Token tokenValor = tokenList.get(indiceTokenIdentificador + 2);
+//
+//
+//            // esse if e else irá tratar o caso de quando existe apenas um token após o sinal de atribuição (não precisava ser implementado)
+//            if (tokenValor.getToken().equals("t_identificador"))
+//            {
+//                // pego o valor do próximo token
+//                String valor = buscarValorIdentificador(tokenValor);
+//
+//
+//                // seto o valor do "token" para o valor encontrado do "tokenValor"
+//                setarValor(token, valor);
+//            }
+//            else
+//                setarValor(token, tokenValor.getLexema());
 
 
             return true;
