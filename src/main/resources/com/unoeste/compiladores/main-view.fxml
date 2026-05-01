@@ -42,9 +42,9 @@
             <left>
                 <TableView fx:id="tableView" prefHeight="200.0" prefWidth="322.0" BorderPane.alignment="CENTER">
                     <columns>
-                        <TableColumn fx:id="colLexema" editable="false" prefWidth="106.0" resizable="false" sortable="false" text="Lexema" />
+                        <TableColumn fx:id="colLexema" editable="false" prefWidth="107.0" resizable="false" sortable="false" text="Lexema" />
                         <TableColumn fx:id="colToken" editable="false" prefWidth="104.0" resizable="false" sortable="false" text="Token" />
-                        <TableColumn fx:id="colLinha" editable="false" prefWidth="55.0" resizable="false" sortable="false" text="Linha" />
+                        <TableColumn fx:id="colLinha" editable="false" prefWidth="56.0" resizable="false" sortable="false" text="Linha" />
                         <TableColumn fx:id="colColuna" editable="false" prefWidth="56.0" resizable="false" sortable="false" text="Coluna" />
                     </columns>
                <columnResizePolicy>
