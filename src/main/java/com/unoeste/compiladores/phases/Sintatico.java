@@ -10,16 +10,16 @@ import java.util.List;
 
 public class Sintatico
 {
-    private  Lexica lexica;
+    private Lexica lexica;
     private Pilha pilha;
     private Token tokenAtual;
-    private  List<Erro> erroList;
-    private  int pos;
+    private List<Erro> erroList;
+    private int pos;
+
     public Sintatico(Lexica lexica, List<Erro> erroList) {
         this.lexica = lexica;
         this.pilha = new Pilha();
         this.erroList = erroList;
-
     }
 
     private List<String> getProducoes(String topo, Token token)

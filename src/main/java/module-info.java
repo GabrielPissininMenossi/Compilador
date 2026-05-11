@@ -13,4 +13,5 @@ module com.unoeste.compiladores {
     exports com.unoeste.compiladores;
     opens com.unoeste.compiladores.stacks;
     opens com.unoeste.compiladores.phases;
+    opens com.unoeste.compiladores.entities.ArvoreAST;
 }
