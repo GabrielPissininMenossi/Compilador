@@ -1,7 +1,7 @@
 package com.unoeste.compiladores.entities;
 
 /**
- * TAC --> Three-Adress Code
+ * TAC --> Three-Address Code
  *      Código de 3 endereços
  * */
 public class TAC {

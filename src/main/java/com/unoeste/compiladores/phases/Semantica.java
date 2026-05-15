@@ -1,7 +1,7 @@
 package com.unoeste.compiladores.phases;
 
 import com.unoeste.compiladores.entities.Erro;
-import com.unoeste.compiladores.stacks.Pilha;
+import com.unoeste.compiladores.entities.stacks.Pilha;
 import com.unoeste.compiladores.entities.Simbolo;
 import com.unoeste.compiladores.entities.Token;
 
@@ -795,7 +795,7 @@ public class Semantica
                    erroList.set(i, erroList.get(j));
                    erroList.set(j,aux);
                }
-                j++;
+               j++;
             }
         }
     }

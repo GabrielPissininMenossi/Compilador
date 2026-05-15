@@ -1,4 +1,4 @@
-package com.unoeste.compiladores.stacks;
+package com.unoeste.compiladores.entities.stacks;
 
 public class NoPilha
 {

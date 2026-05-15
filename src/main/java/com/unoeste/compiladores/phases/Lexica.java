@@ -1,4 +1,5 @@
 package com.unoeste.compiladores.phases;
+
 import com.unoeste.compiladores.entities.Erro;
 import com.unoeste.compiladores.entities.Token;
 import javafx.collections.ObservableList;
