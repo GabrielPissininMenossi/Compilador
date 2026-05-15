@@ -3,8 +3,6 @@ package com.unoeste.compiladores.phases;
 import com.unoeste.compiladores.entities.AST.AST;
 import com.unoeste.compiladores.entities.AST.NoAST;
 import com.unoeste.compiladores.entities.Erro;
-import com.unoeste.compiladores.entities.stacks.NoPilha;
-import com.unoeste.compiladores.entities.stacks.Pilha;
 import com.unoeste.compiladores.entities.Token;
 import com.unoeste.compiladores.entities.stacks.PilhaGenerica;
 
@@ -15,14 +13,14 @@ import java.util.List;
 public class Sintatico
 {
     private Lexica lexica;
-    private Pilha pilhaSimbolos;
+    private PilhaGenerica<String> pilhaSimbolos;
     private Token tokenAtual;
     private List<Erro> erroList;
     private int pos;
 
     public Sintatico(Lexica lexica, List<Erro> erroList) {
         this.lexica = lexica;
-        this.pilhaSimbolos = new Pilha();
+        this.pilhaSimbolos = new PilhaGenerica<>();
         this.erroList = erroList;
     }
 
@@ -299,9 +297,7 @@ public class Sintatico
             //System.out.println(pilhaSimbolos.top().getString());
 
             // Retirada da pilha de simbolos
-            NoPilha noPilha = pilhaSimbolos.pop();
-            String topo = noPilha.getString();
-
+            String topo = pilhaSimbolos.pop().getInfo();
 
             if(topo.charAt(0) == '@') // uma ação na AST
             {

@@ -1,9 +1,9 @@
 package com.unoeste.compiladores.phases;
 
 import com.unoeste.compiladores.entities.Erro;
-import com.unoeste.compiladores.entities.stacks.Pilha;
 import com.unoeste.compiladores.entities.Simbolo;
 import com.unoeste.compiladores.entities.Token;
+import com.unoeste.compiladores.entities.stacks.PilhaGenerica;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -402,7 +402,7 @@ public class Semantica
     {
         List<Token> expressaoInFixa = FormarExpressao(indiceTokenIdentificador); //pega tudo até o ';'
         List<String> expressaoPosFixa = new ArrayList<>();
-        Pilha pilha = new Pilha();
+        PilhaGenerica<String> pilha = new PilhaGenerica<>();
         int i = 0;
         while (i < expressaoInFixa.size())
         {
@@ -425,10 +425,10 @@ public class Semantica
                 case "/":
                 case "%":
                     //Se o operador do topo for diferente de ( e tem prioridade maior ou igual, resolve ele primeiro
-                    while (!pilha.isEmpty() && !pilha.top().getString().equals("(") &&
-                            prioridade(pilha.top().getString()) >= prioridade(elemento))
+                    while (!pilha.isEmpty() && !pilha.top().getInfo().equals("(") &&
+                            prioridade(pilha.top().getInfo()) >= prioridade(elemento))
                     {
-                        expressaoPosFixa.add(pilha.pop().getString());
+                        expressaoPosFixa.add(pilha.pop().getInfo());
                     }
                     pilha.push(elemento);
                     break;
@@ -440,7 +440,7 @@ public class Semantica
                     String aux;
                     do
                     {
-                        aux = pilha.pop().getString();
+                        aux = pilha.pop().getInfo();
                         if (!aux.equals("("))
                         {
                             expressaoPosFixa.add(aux);
@@ -453,7 +453,7 @@ public class Semantica
         }
         while (!pilha.isEmpty())
         {
-            String aux = pilha.pop().getString();
+            String aux = pilha.pop().getInfo();
             expressaoPosFixa.add(aux);
         }
         return expressaoPosFixa;
@@ -466,7 +466,7 @@ public class Semantica
         if (expressaoPosFixa != null)
         {
             tipoExpressao = identificarTipoExpressaoPosFixa(expressaoPosFixa);
-            Pilha pilha = new Pilha();
+            PilhaGenerica<String> pilha = new PilhaGenerica<>();
             String num1, num2;
             int i = 0;
             while (i < expressaoPosFixa.size())
@@ -476,35 +476,35 @@ public class Semantica
                 switch (elemento)
                 {
                     case "+":
-                        num2 = pilha.pop().getString();
-                        num1 = pilha.pop().getString();
+                        num2 = pilha.pop().getInfo();
+                        num1 = pilha.pop().getInfo();
                         pilha.push(calculaExpressao3Op(num1, num2, "+"));
                         break;
                     case "-":
-                        num2 = pilha.pop().getString();
-                        num1 = pilha.pop().getString();
+                        num2 = pilha.pop().getInfo();
+                        num1 = pilha.pop().getInfo();
                         pilha.push(calculaExpressao3Op(num1, num2, "-"));
                         break;
                     case "/":
-                        num2 = pilha.pop().getString();
-                        num1 = pilha.pop().getString();
+                        num2 = pilha.pop().getInfo();
+                        num1 = pilha.pop().getInfo();
                         pilha.push(calculaExpressao3Op(num1, num2, "/"));
                         break;
                     case "*":
-                        num2 = pilha.pop().getString();
-                        num1 = pilha.pop().getString();
+                        num2 = pilha.pop().getInfo();
+                        num1 = pilha.pop().getInfo();
                         pilha.push(calculaExpressao3Op(num1, num2, "*"));
                         break;
                     case "%":
-                        num2 = pilha.pop().getString();
-                        num1 = pilha.pop().getString();
+                        num2 = pilha.pop().getInfo();
+                        num1 = pilha.pop().getInfo();
                         pilha.push(calculaExpressao3Op(num1, num2, "%"));
                         break;
                     default: pilha.push(elemento);
                 }
             }
             if (!pilha.isEmpty())
-                return pilha.pop().getString(); // int ou double ou float
+                return pilha.pop().getInfo(); // int ou double ou float
         }
 
         return "";
