@@ -1,7 +1,5 @@
 package com.unoeste.compiladores;
 
-import com.unoeste.compiladores.entities.stacks.NoPilhaGenerico;
-import com.unoeste.compiladores.entities.stacks.PilhaGenerica;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -23,10 +21,6 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-//        PilhaGenerica<String> pilha = new PilhaGenerica<>();
-//        pilha.push("1");
-//        String elemento = pilha.pop().getInfo();
-
         launch();
     }
 }

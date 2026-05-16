@@ -1,4 +1,4 @@
-package com.unoeste.compiladores.entities.stacks;
+package com.unoeste.compiladores.entities.stack;
 
 public class PilhaGenerica<T> {
     private NoPilhaGenerico<T> topo;

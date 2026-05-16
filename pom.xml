@@ -9,6 +9,42 @@
     <version>1.0-SNAPSHOT</version>
     <name>Compiladores</name>
 
+    <developers>
+        <developer>
+            <id>gabriel.pissinin.menossi</id>
+            <name>Gabriel Pissinin Menossi</name>
+            <email>gabrielpissininmenossi@gmail.com</email>
+            <organization>Dream Compiler</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+            </roles>
+            <timezone>UTC-03:00</timezone>
+        </developer>
+        <developer>
+            <id>matheus.amaral.matos</id>
+            <name>Matheus Amaral Matos</name>
+            <email>mateusamaral907@gmail.com</email>
+            <organization>Dream Compiler</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+            </roles>
+            <timezone>UTC-03:00</timezone>
+        </developer>
+        <developer>
+            <id>matheus.antonucci.mendonca</id>
+            <name>Matheus Antonucci Mendonca</name>
+            <email>??????????@gmail.com</email>
+            <organization>Dream Compiler</organization>
+            <roles>
+                <role>Developer</role>
+                <role>Architect</role>
+            </roles>
+            <timezone>UTC-03:00</timezone>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.2</junit.version>

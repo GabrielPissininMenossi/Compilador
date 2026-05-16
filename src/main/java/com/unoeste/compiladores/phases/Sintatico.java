@@ -4,7 +4,7 @@ import com.unoeste.compiladores.entities.AST.AST;
 import com.unoeste.compiladores.entities.AST.NoAST;
 import com.unoeste.compiladores.entities.Erro;
 import com.unoeste.compiladores.entities.Token;
-import com.unoeste.compiladores.entities.stacks.PilhaGenerica;
+import com.unoeste.compiladores.entities.stack.PilhaGenerica;
 
 import java.util.ArrayList;
 import java.util.Arrays;

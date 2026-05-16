@@ -1,4 +1,4 @@
-package com.unoeste.compiladores.entities.stacks;
+package com.unoeste.compiladores.entities.stack;
 
 public class NoPilhaGenerico<T> {
     private T info; // O dado agora é do tipo genérico T
