@@ -182,7 +182,6 @@ public class MainController implements Initializable {
 
             System.out.println("==============================================================================");
             GeradorCodigoIntermediario sintese = new GeradorCodigoIntermediario();
-            sintese.gerar(sintatico.ast);
             sintese.imprimirInstrucoes();
         }
 

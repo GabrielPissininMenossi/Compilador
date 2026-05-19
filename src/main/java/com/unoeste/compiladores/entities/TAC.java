@@ -29,19 +29,19 @@ public class TAC {
         this.operador = operador;
     }
 
-    public String getOperando1() {
+    public String getOperandoEsq() {
         return operandoEsq;
     }
 
-    public void setOperando1(String operando1) {
+    public void setOperandoEsq(String operando1) {
         this.operandoEsq = operando1;
     }
 
-    public String getOperando2() {
+    public String getOperandoDir() {
         return operandoDir;
     }
 
-    public void setOperando2(String operando2) {
+    public void setOperandoDir(String operando2) {
         this.operandoDir = operando2;
     }
 

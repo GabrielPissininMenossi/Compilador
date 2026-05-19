@@ -36,13 +36,13 @@ public class GeradorCodigoIntermediario {
         }
 
         // Pilha principal para percorrer os comandos da AST
-        PilhaGenerica<FrameGeracao> pilhaComandos = new PilhaGenerica<>();
+        PilhaGenerica<EstadoGeracao> pilhaComandos = new PilhaGenerica<>();
 
         // Empilha o primeiro frame com a raiz da árvore
-        pilhaComandos.push(new FrameGeracao(ast.getRaiz(), "VISITAR"));
+        pilhaComandos.push(new EstadoGeracao(ast.getRaiz(), "VISITAR"));
 
         while (!pilhaComandos.isEmpty()) {
-            FrameGeracao frame = pilhaComandos.pop().getInfo();
+            EstadoGeracao frame = pilhaComandos.pop().getInfo();
 
             // Recupera o nó atual e o estado atual
             NoAST no = frame.getNo();
@@ -67,7 +67,7 @@ public class GeradorCodigoIntermediario {
                 if (valor.equals("bloco")) {
                     List<NoAST> filhos = no.getFilhos();
                     for (int i = filhos.size() - 1; i >= 0; i--) {
-                        pilhaComandos.push(new FrameGeracao(filhos.get(i), "VISITAR"));
+                        pilhaComandos.push(new EstadoGeracao(filhos.get(i), "VISITAR"));
                     }
                 }
 
@@ -124,8 +124,8 @@ public class GeradorCodigoIntermediario {
                         // primeiro empilha a label de fechamento
                         // depois empilha o corpo do if
                         // Assim o corpo será processado antes da label final
-                        pilhaComandos.push(new FrameGeracao(null, "LABEL", labelFim, ""));
-                        pilhaComandos.push(new FrameGeracao(no.getFilhoAt(1), "VISITAR"));
+                        pilhaComandos.push(new EstadoGeracao(null, "LABEL", labelFim, ""));
+                        pilhaComandos.push(new EstadoGeracao(no.getFilhoAt(1), "VISITAR"));
                     }
 
 
@@ -150,17 +150,17 @@ public class GeradorCodigoIntermediario {
                         // 3) label else
                         // 4) goto final
                         // 5) corpo if
-                        pilhaComandos.push(new FrameGeracao(null, "LABEL", labelFim, ""));
+                        pilhaComandos.push(new EstadoGeracao(null, "LABEL", labelFim, ""));
 
                         if (noElse.getValor().equals("else") && !noElse.getFilhos().isEmpty()) {
-                            pilhaComandos.push(new FrameGeracao(noElse.getFilhoAt(0), "VISITAR"));
+                            pilhaComandos.push(new EstadoGeracao(noElse.getFilhoAt(0), "VISITAR"));
                         } else {
-                            pilhaComandos.push(new FrameGeracao(noElse, "VISITAR"));
+                            pilhaComandos.push(new EstadoGeracao(noElse, "VISITAR"));
                         }
 
-                        pilhaComandos.push(new FrameGeracao(null, "LABEL", labelElse, ""));
-                        pilhaComandos.push(new FrameGeracao(null, "GOTO", labelFim, ""));
-                        pilhaComandos.push(new FrameGeracao(no.getFilhoAt(1), "VISITAR"));
+                        pilhaComandos.push(new EstadoGeracao(null, "LABEL", labelElse, ""));
+                        pilhaComandos.push(new EstadoGeracao(null, "GOTO", labelFim, ""));
+                        pilhaComandos.push(new EstadoGeracao(no.getFilhoAt(1), "VISITAR"));
                     }
                 }
 
@@ -190,9 +190,9 @@ public class GeradorCodigoIntermediario {
                     // 1) label final
                     // 2) goto início
                     // 3) corpo do while
-                    pilhaComandos.push(new FrameGeracao(null, "LABEL", labelFim, ""));
-                    pilhaComandos.push(new FrameGeracao(null, "GOTO", labelInicio, ""));
-                    pilhaComandos.push(new FrameGeracao(no.getFilhoAt(1), "VISITAR"));
+                    pilhaComandos.push(new EstadoGeracao(null, "LABEL", labelFim, ""));
+                    pilhaComandos.push(new EstadoGeracao(null, "GOTO", labelInicio, ""));
+                    pilhaComandos.push(new EstadoGeracao(no.getFilhoAt(1), "VISITAR"));
                 }
             }
         }
@@ -289,16 +289,16 @@ public class GeradorCodigoIntermediario {
                 System.out.println("goto " + tac.getResultado());
             }
             else if (tac.getOperador().equals("ifFalse")) {
-                System.out.println("ifFalse " + tac.getOperando1() + " goto " + tac.getResultado());
+                System.out.println("ifFalse " + tac.getOperandoEsq() + " goto " + tac.getResultado());
             }
             else if (tac.getOperador().equals("=")) {
-                System.out.println(tac.getResultado() + " = " + tac.getOperando1());
+                System.out.println(tac.getResultado() + " = " + tac.getOperandoEsq());
             }
             else if (tac.getOperador().equals("return")) {
-                System.out.println("return " + tac.getOperando1());
+                System.out.println("return " + tac.getOperandoEsq());
             }
             else {
-                System.out.println(tac.getResultado() + " = " + tac.getOperando1() + " " + tac.getOperador() + " " + tac.getOperando2());
+                System.out.println(tac.getResultado() + " = " + tac.getOperandoEsq() + " " + tac.getOperador() + " " + tac.getOperandoDir());
             }
         }
     }
