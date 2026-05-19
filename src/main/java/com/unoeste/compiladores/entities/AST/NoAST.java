@@ -151,6 +151,10 @@ public class NoAST {
         return list_operadores.contains(valor);
     }
 
+    public boolean isFolha(){
+        return filhos == null || filhos.isEmpty();
+    }
+
     public void imprimirArvore(String prefixo, boolean isUltimo) {
         System.out.println(prefixo + (isUltimo ? "└── " : "├── ") + valor);
 

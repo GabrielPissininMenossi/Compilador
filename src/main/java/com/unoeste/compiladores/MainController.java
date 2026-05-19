@@ -4,6 +4,7 @@ import com.unoeste.compiladores.entities.*;
 import com.unoeste.compiladores.phases.Lexica;
 import com.unoeste.compiladores.phases.Semantica;
 import com.unoeste.compiladores.phases.Sintatico;
+import com.unoeste.compiladores.phases.Sintese.GeradorCodigoIntermediario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -144,21 +145,21 @@ public class MainController implements Initializable {
         }
     }
 
-    public void onAnalisarLexico(ActionEvent actionEvent)
-    {
+    public void onAnalisarLexico(ActionEvent actionEvent) {
         sucessos.clear();
         tabelaSimbolos.clear();
         lexica.limparListas();
         logErro.clear();
 
+        System.out.println();
+        System.out.println("==============================================================================");
+
         int tamanhoTexto = codeArea.getParagraphs().size();
         int i = 0;
         int posLinha = 1, posColuna = 1;
-        while(i < tamanhoTexto)
-        {
+        while (i < tamanhoTexto) {
             String linha = codeArea.getParagraph(i).getText();
-            if (!linha.isEmpty())
-            {
+            if (!linha.isEmpty()) {
                 posColuna = lexica.separarCadeias(linha, i + 1, sucessos);
                 posLinha = i + 1;
             }
@@ -175,8 +176,16 @@ public class MainController implements Initializable {
         sintatico.analisarSintatico();
 
         Semantica semantica = new Semantica(lexica, erroList, tabelaSimbolos);
-        if (erroList.size() == 1)
+        if (erroList.size() == 1) {
             semantica.analisarSemantico();
+
+
+            System.out.println("==============================================================================");
+            GeradorCodigoIntermediario sintese = new GeradorCodigoIntermediario();
+            sintese.gerar(sintatico.ast);
+            sintese.imprimirInstrucoes();
+        }
+
         tableViewSimbolos.setItems(tabelaSimbolos);
 
         limparCores();

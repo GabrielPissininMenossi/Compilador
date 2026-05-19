@@ -18,6 +18,8 @@ public class Sintatico
     private List<Erro> erroList;
     private int pos;
 
+    public AST ast = new AST(); // Abstract Syntax Tree --> para uso na fase de síntese
+
     public Sintatico(Lexica lexica, List<Erro> erroList) {
         this.lexica = lexica;
         this.pilhaSimbolos = new PilhaGenerica<>();
@@ -282,7 +284,6 @@ public class Sintatico
     public AST analisarSintatico()
     {
         // Definindo os recursos necessários para a construção da AST
-        AST ast = new AST(); // Abstract Syntax Tree --> para uso na fase de síntese
         AST auxAST = ast;
         PilhaGenerica<NoAST> pilhaNos = new PilhaGenerica<>(); // para eu conseguir controlar os níveis da minha árvore
 
