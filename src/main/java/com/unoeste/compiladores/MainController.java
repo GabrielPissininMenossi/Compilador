@@ -182,7 +182,12 @@ public class MainController implements Initializable {
 
             System.out.println("==============================================================================");
             GeradorCodigoIntermediario sintese = new GeradorCodigoIntermediario();
-            sintese.imprimirInstrucoes();
+
+            List<TAC> codigos = sintese.gerar(sintatico.ast); //aqui eu gero os códigos de 3 enderecos
+            sintese.imprimirInstrucoes(); // impreme o programa contendo os códigos de 3 endereços
+
+            // OTIMIZAÇÃO DOS CÓDIGOS DE 3 ENDEREÇOS
+
         }
 
         tableViewSimbolos.setItems(tabelaSimbolos);
