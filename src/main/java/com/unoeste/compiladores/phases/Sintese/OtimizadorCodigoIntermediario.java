@@ -19,19 +19,32 @@ public class OtimizadorCodigoIntermediario {
     public List<TAC> otimizarInstrucoes(List<TAC> instrucoes) {
         // Limpar a lista por default
         instrucoesOtimizadas.clear();
-
-        // andar cada instrução para realizar uma otimização ou não
-        for(TAC instrucao : instrucoes)
-        {
-            if(existeOtimizacao(instrucao)) // verificação se a instrução possui possibilidade de otimização
-            {
-                // realiza a otimização
-            }
-            else
-            {
-                instrucoesOtimizadas.add(instrucao);
-            }
+        for (TAC i : instrucoes) { //realizar a cópia das instruções originais
+            instrucoesOtimizadas.add(new TAC(i.getOperador(),i.getOperandoEsq(),i.getOperandoDir(), i.getResultado())); // Usando um construtor de cópia
         }
+
+        // PASSOS PARA SEREM SEGUIDOS:
+        // - Eliminação de subexpressões comuns                                  -> 1
+        // - Eliminação de código redundante                                     -> 2
+        // - Propagação de cópias                                                -> 3
+        // - Eliminação de desvios desnecessários                                -> 4
+        // - Substituição de expressões algébricas por equivalentes mais simples -> 5
+        // - Otimização de laços                                                 -> 6
+
+        // 1
+
+        // 2
+        remNeverUsedLines(instrucoesOtimizadas);
+
+        // 3
+
+        // 4
+        remDesviosDesnecessarios(instrucoesOtimizadas);
+
+        // 5
+        subExpAlg(); //substitui as expressões algébricas por outras equivalentes
+
+        // 6
 
         return instrucoesOtimizadas;
     }
@@ -57,11 +70,31 @@ public class OtimizadorCodigoIntermediario {
         return true; // provisório
     }
 
+    // REMOVER AS LINHAS EM QUE VARIÁVEIS SÃO ATRIBUÍDAS E NUNCA MAIS USADAS NO CÓDIGO
+    private void remNeverUsedLines(List<TAC> instrucoes)
+    {
+        for(int i=0; i<instrucoes.size(); i++)
+            if(!isInicioIf(instrucoes,i) &&
+                    !isDesvioCondicional(instrucoes.get(i)) &&
+                    !isDesvioIncondicional(instrucoes.get(i)) &&
+                    !isReturn(instrucoes.get(i)) &&
+                    !isRotulo(instrucoes.get(i)) &&
+                    isNeverUsed(i, instrucoes))
+                instrucoes.remove(i);
+    }
+
     // VERIFICAÇÃO SE UMA VARIÁVEL NÃO É UTILIZADA DEPOIS DE UMA DETERMINADA LINHA
     private boolean isNeverUsed(int linha, List<TAC> instrucoes)
     {
+        for(int i = linha; i < instrucoes.size(); i++)
+            if(instrucoes.get(linha).getResultado().equals(instrucoes.get(i).getOperandoDir()) ||
+                    instrucoes.get(linha).getResultado().equals(instrucoes.get(i).getOperandoEsq()))
+            {
+                // se entrou no IF quer dizer que em algum ponto a variável é utilizada no código
+                return false;
+            }
 
-        return true; //provisório
+        return true;
     }
 
     // VERIFICAÇÃO SE A VARIÁVEL NUNCA É EXECUTADA APÓS UMA DETERMINADA LINHA
@@ -76,22 +109,32 @@ public class OtimizadorCodigoIntermediario {
     {
         List<Integer> repetidas = new ArrayList<>();
 
-
         return repetidas;
     }
 
-    // RETORNO DE UMA LISTA DOS ÍNDICES DAS LINHAS CONTENDO CÓPIAS INUTILIZADAS (INÚTEIS)
-    private List<Integer> linhasCopInut(List<TAC> instrucoes)
+    // REMOVER DESVIOS DESNECESSÁRIOS -> GOTO APONTANDO PARA A LINHA LOGO ABAIXO
+    private void remDesviosDesnecessarios(List<TAC> instrucoesOtimizadas)
     {
-        List<Integer> copias = new ArrayList<>();
+        List<Integer> linhas = linhasDesvIncoProxInst(instrucoesOtimizadas);
 
-        return copias;
+        for(Integer linha : linhas)
+            instrucoesOtimizadas.remove(linha);
     }
 
     // RETORNO DE UMA LISTA DOS ÍNDICES DAS LINHAS CONTENDO UM DESVIO INCONDICIONAL QUE APONTA DIRETAMENTE PARA A PRÓXIMA LINHA
-    private List<Integer> linhasDesvIncoProxInst()
+    private List<Integer> linhasDesvIncoProxInst(List<TAC> instrucoes)
     {
         List<Integer> desvios = new ArrayList<>();
+        for(int i = 0; i < instrucoes.size(); i++)
+        {
+            if(isDesvioIncondicional(instrucoes.get(i)) &&
+                    i+1<instrucoes.size() &&
+                    instrucoes.get(i+1).getResultado().equals(instrucoes.get(i).getResultado())
+            ) //verificar se o goto indica para a linha logo abaixo
+            {
+                desvios.add(i); //add o índice atual
+            }
+        }
 
         return desvios;
     }
@@ -102,7 +145,7 @@ public class OtimizadorCodigoIntermediario {
         for(TAC instrucao : instrucoesOtimizadas)
         {
             TAC novaInstrucao = getExpAlgEqui(instrucao); // aqui ele retora a expressão algébrica equivalente
-            int indice = instrucoesOtimizadas.indexOf(novaInstrucao);
+            int indice = instrucoesOtimizadas.indexOf(instrucao);
 
             // editar a instrução
             //instrucoesOtimizadas.set(indice, novaInstrucao);
@@ -116,11 +159,47 @@ public class OtimizadorCodigoIntermediario {
     // RETORNAR UMA EXPRESSÃO ALGÉBRICA EQUIVALENTE A RECEBIDA POR PARÂMETRO
     private TAC getExpAlgEqui(TAC instrucao)
     {
-        TAC novaInstrucao = new TAC();
-
         // conseguir a expressão algébrica equivalente
-
-        return novaInstrucao;
+        if(instrucao.getOperador().equals("*"))
+        {
+            if(instrucao.getOperandoDir().equals("2")){
+                return new TAC("+",instrucao.getOperandoEsq(),instrucao.getOperandoEsq(),instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoEsq().equals("2")){
+                return new TAC("+",instrucao.getOperandoDir(),instrucao.getOperandoDir(),instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoDir().equals("1")){
+                return new TAC("=",instrucao.getOperandoEsq(),"",instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoEsq().equals("1")){
+                return new TAC("=",instrucao.getOperandoDir(),"",instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoDir().equals("0") || instrucao.getOperandoDir().equals("0")){
+                return new TAC("=","0","",instrucao.getResultado());
+            }
+        }
+        else if(instrucao.getOperador().equals("/"))
+        {
+            if(instrucao.getOperandoDir().equals("1")){
+                return new TAC("=",instrucao.getOperandoEsq(),"",instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoDir().equals("0") || instrucao.getOperandoEsq().equals("0")){
+                return new TAC("=","0","",instrucao.getResultado());
+            }
+            else if (instrucao.getOperandoDir().equals("0.5")){
+                return new TAC("+",instrucao.getOperandoEsq(),instrucao.getOperandoEsq(),instrucao.getResultado());
+            }
+        }
+        else if(instrucao.getOperador().equals("+") || instrucao.getOperador().equals("-"))
+        {
+            if(instrucao.getOperandoDir().equals("0")){
+                return new TAC("=",instrucao.getOperandoEsq(),"",instrucao.getResultado());
+            }
+            else if(instrucao.getOperandoEsq().equals("0")){
+                return new TAC("=",instrucao.getOperandoDir(),"",instrucao.getResultado());
+            }
+        }
+        return instrucao;
     }
 
     // VERIFICAÇÕES AUXILIARES
@@ -199,7 +278,6 @@ public class OtimizadorCodigoIntermediario {
         return false;
     }
 
-
     private boolean isDesvioCondicional(TAC instrucao)
     {
         return instrucao.getOperador().equals("ifFalse");
@@ -207,7 +285,6 @@ public class OtimizadorCodigoIntermediario {
 
     private boolean isDesvioIncondicional(TAC instrucao)
     {
-
         return instrucao.getOperador().equals("goto");
     }
 
@@ -228,14 +305,42 @@ public class OtimizadorCodigoIntermediario {
 
     private boolean isOperacaoAritmetica(TAC instrucao)
     {
-        return instrucao.getOperador().equals("+") || instrucao.getOperador().equals("-") ||
-                instrucao.getOperador().equals("*") || instrucao.getOperador().equals("/");
+        return instrucao.getOperador().equals("+")  ||
+                instrucao.getOperador().equals("-") ||
+                instrucao.getOperador().equals("*") ||
+                instrucao.getOperador().equals("/");
     }
 
     private boolean isOperacaoRelacional(TAC instrucao)
     {
-        return instrucao.getOperador().equals(">") || instrucao.getOperador().equals("<") ||
-                instrucao.getOperador().equals(">=") || instrucao.getOperador().equals("<=") ||
-                instrucao.getOperador().equals("==") || instrucao.getOperador().equals("!=");
+        return instrucao.getOperador().equals(">")   ||
+                instrucao.getOperador().equals("<")  ||
+                instrucao.getOperador().equals(">=") ||
+                instrucao.getOperador().equals("<=") ||
+                instrucao.getOperador().equals("==") ||
+                instrucao.getOperador().equals("!=");
+    }
+
+    public void imprimirInstrucoesOtimizadas() {
+        for (TAC tac : instrucoesOtimizadas) {
+            if (tac.getOperador().equals("label")) {
+                System.out.println(tac.getResultado() + ":");
+            }
+            else if (tac.getOperador().equals("goto")) {
+                System.out.println("goto " + tac.getResultado());
+            }
+            else if (tac.getOperador().equals("ifFalse")) {
+                System.out.println("ifFalse " + tac.getOperandoEsq() + " goto " + tac.getResultado());
+            }
+            else if (tac.getOperador().equals("=")) {
+                System.out.println(tac.getResultado() + " = " + tac.getOperandoEsq());
+            }
+            else if (tac.getOperador().equals("return")) {
+                System.out.println("return " + tac.getOperandoEsq());
+            }
+            else {
+                System.out.println(tac.getResultado() + " = " + tac.getOperandoEsq() + " " + tac.getOperador() + " " + tac.getOperandoDir());
+            }
+        }
     }
 }

@@ -4,7 +4,9 @@ import com.unoeste.compiladores.entities.*;
 import com.unoeste.compiladores.phases.Lexica;
 import com.unoeste.compiladores.phases.Semantica;
 import com.unoeste.compiladores.phases.Sintatico;
+import com.unoeste.compiladores.phases.Sintese.GeradorCodigoAlvo;
 import com.unoeste.compiladores.phases.Sintese.GeradorCodigoIntermediario;
+import com.unoeste.compiladores.phases.Sintese.OtimizadorCodigoIntermediario;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -172,22 +174,33 @@ public class MainController implements Initializable {
 
         tableView.setItems(sucessos);// conecta tabela aos tokens
 
+        // ===================================== FASE SINTÁTICA ===============================================
         Sintatico sintatico = new Sintatico(lexica, erroList);
         sintatico.analisarSintatico();
 
-        Semantica semantica = new Semantica(lexica, erroList, tabelaSimbolos);
         if (erroList.size() == 1) {
+            // ===================================== FASE SEMÂNTICA ============================================
+            Semantica semantica = new Semantica(lexica, erroList, tabelaSimbolos);
             semantica.analisarSemantico();
 
-
-            System.out.println("==============================================================================");
+            // ===================================== FASE DE SÍNTESE ===========================================
+            // GERAÇÃO DO CÓDIGO DE 3 ENDEREÇOS
+            System.out.println("\n\nGeração de código de 3 endereços ==============================================================================");
             GeradorCodigoIntermediario sintese = new GeradorCodigoIntermediario();
-
             List<TAC> codigos = sintese.gerar(sintatico.ast); //aqui eu gero os códigos de 3 enderecos
             sintese.imprimirInstrucoes(); // impreme o programa contendo os códigos de 3 endereços
 
             // OTIMIZAÇÃO DOS CÓDIGOS DE 3 ENDEREÇOS
+            System.out.println("\n\nOtimização de código de 3 endereços ==============================================================================");
+            OtimizadorCodigoIntermediario otimizador = new OtimizadorCodigoIntermediario();
+            List<TAC> codigosOtimizados = otimizador.otimizarInstrucoes(codigos);
+            otimizador.imprimirInstrucoesOtimizadas();
 
+            // GERAÇÃO DO CÓDIGO ALVO
+            System.out.println("\n\nGeração de código algo [desenvolvimento] ==============================================================================");
+            GeradorCodigoAlvo geradorCodigoAlvo = new GeradorCodigoAlvo();
+            //List<String> codigosSimpSim = geradorCodigoAlvo.getCodigoAlvo(codigosOtimizados);
+            //geradorCodigoAlvo.imprimirCodigoAlvo();
         }
 
         tableViewSimbolos.setItems(tabelaSimbolos);

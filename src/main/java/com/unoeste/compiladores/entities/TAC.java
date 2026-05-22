@@ -10,10 +10,10 @@ public class TAC {
     private String operandoDir;
     private String resultado;
 
-    public TAC(String operador, String operando1, String operando2, String resultado) {
+    public TAC(String operador, String operandoEsq, String operandoDir, String resultado) {
         this.operador = operador;
-        this.operandoEsq = operando1;
-        this.operandoDir = operando2;
+        this.operandoEsq = operandoEsq;
+        this.operandoDir = operandoDir;
         this.resultado = resultado;
     }
 
