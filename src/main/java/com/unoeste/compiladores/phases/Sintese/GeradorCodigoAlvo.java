@@ -76,19 +76,19 @@ public class GeradorCodigoAlvo {
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getCompDiferente(operEsq, operDir, result, codigoAlvo);
                 break;
             case "=":
-                instrucoesTraduzidas = DicionarioCodigoAlvo.getAtribuicao(operEsq, operDir, result, codigoAlvo);
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getAtribuicao(operEsq, result, codigoAlvo);
                 break;
             case "ifFalse":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getIfFalse(operEsq, operDir, result, codigoAlvo);
                 break;
             case "label":
-                instrucoesTraduzidas = DicionarioCodigoAlvo.getLabel(operEsq, operDir, result, codigoAlvo);
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getLabel(result);
                 break;
             case "goto":
-                instrucoesTraduzidas = DicionarioCodigoAlvo.getGoto(operEsq, operDir, result, codigoAlvo);
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getGoto(result);
                 break;
             case "return":
-                instrucoesTraduzidas = DicionarioCodigoAlvo.getReturn(operEsq, operDir, result, codigoAlvo);
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getReturn(operEsq);
                 break;
         }
 
