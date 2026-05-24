@@ -199,8 +199,18 @@ public class MainController implements Initializable {
             // GERAÇÃO DO CÓDIGO ALVO
             System.out.println("\n\nGeração de código algo [desenvolvimento] ==============================================================================");
             GeradorCodigoAlvo geradorCodigoAlvo = new GeradorCodigoAlvo();
-            //List<String> codigosSimpSim = geradorCodigoAlvo.getCodigoAlvo(codigosOtimizados);
-            //geradorCodigoAlvo.imprimirCodigoAlvo();
+            List<String> codigosSimpSim = geradorCodigoAlvo.getCodigoAlvo(codigosOtimizados);
+            geradorCodigoAlvo.imprimirCodigoAlvo();
+
+            // SALVAR ARQUIVO CONTENDO CODIGO SIMPSIM
+//            String pasta = "C:/...."; //caminho para salvar o arquivo
+//            System.out.println("\n\nSalvando código Assembly...");
+//            System.out.println("Pasta: " + pasta);
+//            SalvadorDeCodigo salvadorDeCodigo = new SalvadorDeCodigo();
+//            if(salvadorDeCodigo.salvarCodigo(codigosSimpSim, pasta))
+//                System.out.println("Salvo com sucesso!!");
+//            else
+//                System.out.println("Erro ao salvar!");
         }
 
         tableViewSimbolos.setItems(tabelaSimbolos);

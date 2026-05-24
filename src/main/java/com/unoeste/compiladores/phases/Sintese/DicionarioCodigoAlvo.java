@@ -49,17 +49,17 @@ public class DicionarioCodigoAlvo {
         if(!isNumero(operEsq))
         {
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-            numero = getValorVariavel(operEsq, codigoAlvo);
+            //numero = getValorVariavel(operEsq, codigoAlvo);
         }
         else // É UM NÚMERO CRU -> OPERADOR DA ESQUERDA
         {
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
-            numero = operEsq;
+            //numero = operEsq;
         }
         // VERIFICANDO SE O VALOR RECUPERADO DO OPERADOR É DOUBLE
-        if(isDouble(numero))
-            isDouble = true;
-        numero = "";
+//        if(isDouble(numero))
+//            isDouble = true;
+//        numero = "";
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
@@ -67,26 +67,30 @@ public class DicionarioCodigoAlvo {
         if(!isNumero(operDir))
         {
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-            numero = getValorVariavel(operDir, codigoAlvo);
+            //numero = getValorVariavel(operDir, codigoAlvo);
         }
         else // É UM NÚMERO CRU -> OPERADOR DA DIREITA
         {
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
-            numero = operDir;
+            //numero = operDir;
         }
-        if(isDouble(numero))
-            isDouble = true;
-        numero = "";
+//        if(isDouble(numero))
+//            isDouble = true;
+//        numero = "";
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        // VERIFICANDO SE ALGUM OPERADOR POSSUI VALOR DOUBLE
-        if(isDouble) // realizar adição de valores DOUBLE
-        {
-            linhaTraduzida.append("addf R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
-        }
-        else // realizar adição de valores INTEIROS
-            linhaTraduzida.append("addi R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+//        // VERIFICANDO SE ALGUM OPERADOR POSSUI VALOR DOUBLE
+//        if(isDouble) // realizar adição de valores DOUBLE
+//        {
+//            linhaTraduzida.append("addf R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+//        }
+//        else // realizar adição de valores INTEIROS
+//            linhaTraduzida.append("addi R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+
+        //realizar apenas soma de valores inteiros
+        linhaTraduzida.append("addi R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
@@ -123,22 +127,22 @@ public class DicionarioCodigoAlvo {
         {
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
 
-            numero = getValorVariavel(operEsq, codigoAlvo);
+            //numero = getValorVariavel(operEsq, codigoAlvo);
         }
         else
         {
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
 
-            numero = operEsq;
+            //numero = operEsq;
         }
 
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        if(isDouble(numero))
-            isDouble = true;
-
-        numero = "";
+//        if(isDouble(numero))
+//            isDouble = true;
+//
+//        numero = "";
 
         // =========================================================
         // OPERANDO DA DIREITA -> R2
@@ -146,21 +150,21 @@ public class DicionarioCodigoAlvo {
         if(!isNumero(operDir))
         {
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-            numero = getValorVariavel(operDir, codigoAlvo);
+            //numero = getValorVariavel(operDir, codigoAlvo);
         }
         else
         {
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
-            numero = operDir;
+            //numero = operDir;
         }
 
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        if(isDouble(numero))
-            isDouble = true;
-
-        numero = "";
+//        if(isDouble(numero))
+//            isDouble = true;
+//
+//        numero = "";
 
         // =========================================================
         // INVERTER O SINAL DE R2 EM TEMPO DE EXECUÇÃO
@@ -194,10 +198,13 @@ public class DicionarioCodigoAlvo {
         // SOMA FINAL
         // R3 = R1 + (-R2)
         // =========================================================
-        if(isDouble)
-            linhaTraduzida.append("addf R3, R1, R2\n");
-        else
-            linhaTraduzida.append("addi R3, R1, R2\n");
+//        if(isDouble)
+//            linhaTraduzida.append("addf R3, R1, R2\n");
+//        else
+//            linhaTraduzida.append("addi R3, R1, R2\n");
+
+        // REALIZAR SOMA APENAS COM VALORES INTEIROS
+        linhaTraduzida.append("addi R3, R1, R2\n");
 
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
@@ -366,13 +373,182 @@ public class DicionarioCodigoAlvo {
     {
         List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
+
         preencheNumeros();
 
-        // 1.
-        // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
-        if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+        String seqDiv = getSequenciaDivisoes();
 
+        String lblEsqNeg = "div_esq_neg_" + seqDiv;
+        String lblEsqFim = "div_esq_fim_" + seqDiv;
+
+        String lblDirNeg = "div_dir_neg_" + seqDiv;
+        String lblDirFim = "div_dir_fim_" + seqDiv;
+
+        String lblLoop = "div_loop_" + seqDiv;
+        String lblLoopCorpo = "div_loop_corpo_" + seqDiv;
+        String lblFimLoop = "div_fim_loop_" + seqDiv;
+
+        String lblSinalPos = "div_sinal_pos_" + seqDiv;
+        String lblDivZero = "div_zero_" + seqDiv;
+        String lblFimDiv = "div_fim_" + seqDiv;
+
+        // LABEL DO RESULTADO
+        if(!resultExists(result, codigoAlvo))
+        {
+            linhas.add(result + ":\n");
+        }
+
+        // =========================================================
+        // OPERANDO DA ESQUERDA -> R1
+        // =========================================================
+        if(!isNumero(operEsq))
+        {
+            linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
+        }
+        else
+        {
+            linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
+        }
+        linhas.add(linhaTraduzida.toString());
+        linhaTraduzida = new StringBuilder();
+
+        // =========================================================
+        // OPERANDO DA DIREITA -> R2
+        // =========================================================
+        if(!isNumero(operDir))
+        {
+            linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
+        }
+        else
+        {
+            linhaTraduzida.append("load R2, ").append(operDir).append("\n");
+        }
+        linhas.add(linhaTraduzida.toString());
+
+        // =========================================================
+        // CONSTANTES AUXILIARES
+        // =========================================================
+        linhas.add("load R6, -1\n"); // comparação com negativo
+
+        // =========================================================
+        // SINAL DO OPERANDO DA ESQUERDA
+        // R3 = 0 -> positivo
+        // R3 = 1 -> negativo
+        // =========================================================
+        linhas.add("jmpLE R1<=R6, " + lblEsqNeg + "\n");
+        linhas.add("move R3, 0\n");
+        linhas.add("jmp " + lblEsqFim + "\n");
+
+        linhas.add(lblEsqNeg + ":\n");
+        linhas.add("move R3, 1\n");
+        linhas.add("xor R7, R1, 11111111b\n");
+        linhas.add("addi R1, R7, 1\n"); // R1 = abs(R1)
+
+        linhas.add(lblEsqFim + ":\n");
+
+        // =========================================================
+        // SINAL DO OPERANDO DA DIREITA
+        // R4 = 0 -> positivo
+        // R4 = 1 -> negativo
+        // =========================================================
+        linhas.add("jmpLE R2<=R6, " + lblDirNeg + "\n");
+        linhas.add("move R4, 0\n");
+        linhas.add("jmp " + lblDirFim + "\n");
+
+        linhas.add(lblDirNeg + ":\n");
+        linhas.add("move R4, 1\n");
+        linhas.add("xor R7, R2, 11111111b\n");
+        linhas.add("addi R2, R7, 1\n"); // R2 = abs(R2)
+
+        linhas.add(lblDirFim + ":\n");
+
+        // =========================================================
+        // XOR DOS SINAIS
+        // RF = 0 -> resultado positivo
+        // RF = 1 -> resultado negativo
+        // =========================================================
+        linhas.add("xor RF, R3, R4\n");
+
+        // =========================================================
+        // DIVISÃO POR SUBTRAÇÕES/SOMAS SUCESSIVAS
+        // =========================================================
+        linhas.add("jmpEQ R2=0, " + lblDivZero + "\n"); // divisão por zero
+
+        linhas.add("load R3, 0\n"); // acumulador parcial
+        linhas.add("load R5, 0\n"); // quociente
+        linhas.add("load R6, 1\n"); // constante 1
+
+        linhas.add(lblLoop + ":\n");
+        linhas.add("addi R7, R3, R2\n");          // próximo acumulado = atual + divisor
+        linhas.add("jmpLE R7<=R1, " + lblLoopCorpo + "\n");
+        linhas.add("jmp " + lblFimLoop + "\n");
+
+        linhas.add(lblLoopCorpo + ":\n");
+        linhas.add("move R3, R7\n");              // atualiza acumulado
+        linhas.add("addi R5, R5, R6\n");          // quociente++
+        linhas.add("jmp " + lblLoop + "\n");
+
+        linhas.add(lblFimLoop + ":\n");
+
+        // =========================================================
+        // APLICAR SINAL FINAL
+        // =========================================================
+        linhas.add("jmpEQ RF=0, " + lblSinalPos + "\n");
+        linhas.add("xor R7, R5, 11111111b\n");
+        linhas.add("addi R5, R7, 1\n"); // R5 = -R5
+
+        linhas.add(lblSinalPos + ":\n");
+        linhas.add("store R5, [" + result + "]\n");
+        linhas.add("jmp " + lblFimDiv + "\n");
+
+        // =========================================================
+        // DIVISÃO POR ZERO
+        // =========================================================
+        linhas.add(lblDivZero + ":\n");
+        linhas.add("move R5, 0\n");
+        linhas.add("store R5, [" + result + "]\n");
+
+        linhas.add(lblFimDiv + ":\n");
+
+        return linhas;
+    }
+
+    public static int contadorRestos = 0;
+
+    public static String getSequenciaRestos()
+    {
+        return "resto" + contadorRestos++;
+    }
+
+    public static List<String> getRestoComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
+    {
+        List<String> linhas = new ArrayList<>();
+        StringBuilder linhaTraduzida = new StringBuilder();
+
+        preencheNumeros();
+
+        String seqResto = getSequenciaRestos();
+
+        String lblEsqNeg = "resto_esq_neg_" + seqResto;
+        String lblEsqFim = "resto_esq_fim_" + seqResto;
+
+        String lblDirNeg = "resto_dir_neg_" + seqResto;
+        String lblDirFim = "resto_dir_fim_" + seqResto;
+
+        String lblLoop = "resto_loop_" + seqResto;
+        String lblCorpo = "resto_corpo_" + seqResto;
+        String lblFim = "resto_fim_" + seqResto;
+
+        String lblDivZero = "resto_div_zero_" + seqResto;
+        String lblSalvarPos = "resto_salvar_pos_" + seqResto;
+
+        // label do resultado
+        if(!resultExists(result, codigoAlvo))
+        {
+            linhas.add(result + ":\n");
+        }
+
+        // operando esquerdo -> R1
         if(!isNumero(operEsq))
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
         else
@@ -380,6 +556,7 @@ public class DicionarioCodigoAlvo {
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
+        // operando direito -> R2
         if(!isNumero(operDir))
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
         else
@@ -387,33 +564,71 @@ public class DicionarioCodigoAlvo {
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        String sufixo = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
-        String rotuloLoop = "loopDiv_" + sufixo;
-        String rotuloContinua = "continuaDiv_" + sufixo;
-        String rotuloFim = "fimDiv_" + sufixo;
-        String rotuloZero = "divZero_" + sufixo;
+        // constante para testar negativo
+        linhas.add("load R6, -1\n");
 
-        linhas.add("load R3, 0\n");   // quociente
-        linhas.add("load R4, 0\n");   // acumulador parcial
-        linhas.add("load R5, 1\n");   // constante 1
-        linhas.add("jmpEQ R2=0, " + rotuloZero + "\n");
+        // sinal do operando esquerdo: R3 = 0 positivo, 1 negativo
+        linhas.add("jmpLE R1<=R6, " + lblEsqNeg + "\n");
+        linhas.add("move R3, 0\n");
+        linhas.add("jmp " + lblEsqFim + "\n");
+        linhas.add(lblEsqNeg + ":\n");
+        linhas.add("move R3, 1\n");
+        linhas.add("xor R7, R1, 11111111b\n");
+        linhas.add("addi R1, R7, 1\n");
+        linhas.add(lblEsqFim + ":\n");
 
-        linhas.add(rotuloLoop + ":\n");
-        linhas.add("addi R6, R4, R2\n");      // próximo acumulado = acumulado + divisor
-        linhas.add("jmpLE R6<=R1, " + rotuloContinua + "\n");
-        linhas.add("jmp " + rotuloFim + "\n");
+        // sinal do operando direito: R4 = 0 positivo, 1 negativo
+        linhas.add("jmpLE R2<=R6, " + lblDirNeg + "\n");
+        linhas.add("move R4, 0\n");
+        linhas.add("jmp " + lblDirFim + "\n");
+        linhas.add(lblDirNeg + ":\n");
+        linhas.add("move R4, 1\n");
+        linhas.add("xor R7, R2, 11111111b\n");
+        linhas.add("addi R2, R7, 1\n");
+        linhas.add(lblDirFim + ":\n");
 
-        linhas.add(rotuloContinua + ":\n");
-        linhas.add("move R4, R6\n");          // acumula o novo valor
-        linhas.add("addi R3, R3, R5\n");      // quociente++
-        linhas.add("jmp " + rotuloLoop + "\n");
+        // divisão por zero
+        linhas.add("jmpEQ R2=0, " + lblDivZero + "\n");
 
-        linhas.add(rotuloZero + ":\n");
-        linhas.add("load R3, 0\n");           // divisão por zero: devolve 0
-        linhas.add("jmp " + rotuloFim + "\n");
+        // ---------------------------------------------------------
+        // resto = dividend - (maior múltiplo de divisor <= dividend)
+        // usando soma sucessiva
+        // R5 = acumulador do múltiplo
+        // R6 = 1
+        // ---------------------------------------------------------
+        linhas.add("load R5, 0\n");
+        linhas.add("load R6, 1\n");
 
-        linhas.add(rotuloFim + ":\n");
-        linhas.add("store R3, [" + result + "]\n");
+        linhas.add(lblLoop + ":\n");
+        linhas.add("addi R7, R5, R2\n");                 // candidato = acumulador + divisor
+        linhas.add("jmpLE R7<=R1, " + lblCorpo + "\n");  // se candidato <= dividendo, continua
+        linhas.add("jmp " + lblFim + "\n");
+
+        linhas.add(lblCorpo + ":\n");
+        linhas.add("move R5, R7\n");                     // atualiza acumulador
+        linhas.add("jmp " + lblLoop + "\n");
+
+        linhas.add(lblFim + ":\n");
+
+        // Resto positivo: R1 - R5
+        // faz isso por complemento de 2 em R5 e soma em R1
+        linhas.add("xor R7, R5, 11111111b\n");
+        linhas.add("addi R7, R7, 1\n");
+        linhas.add("addi R5, R1, R7\n");                 // R5 = R1 - R5
+
+        // sinal do resto: segue o sinal do operando esquerdo
+        linhas.add("jmpEQ R3=0, " + lblSalvarPos + "\n");
+        linhas.add("xor R7, R5, 11111111b\n");
+        linhas.add("addi R5, R7, 1\n");
+
+        linhas.add(lblSalvarPos + ":\n");
+        linhas.add("store R5, [" + result + "]\n");
+        linhas.add("jmp " + lblFim + "\n");
+
+        // divisão por zero
+        linhas.add(lblDivZero + ":\n");
+        linhas.add("load R5, 0\n");
+        linhas.add("store R5, [" + result + "]\n");
 
         return linhas;
     }
@@ -445,7 +660,7 @@ public class DicionarioCodigoAlvo {
         linhas.add("naoIgual"+seqIgual+": store 0, ["+result+"]\n");
         linhas.add("jmp sairIgual"+seqIgual+"\n");
         linhas.add("igual"+seqIgual+": store 1, ["+result+"]\n");
-        linhas.add("sairIgual"+seqIgual+"\n");
+        linhas.add("sairIgual"+seqIgual+":\n");
 
         return linhas;
     }
@@ -474,10 +689,10 @@ public class DicionarioCodigoAlvo {
         String seqMaior = getSequenciaMaiores();
 
         linhas.add("jmpLE R1<=R2, naoMaior"+seqMaior+"\n");
-        linhas.add("maior"+seqMaior+": store 0, ["+result+"]\n");
+        linhas.add("maior"+seqMaior+": store 1, ["+result+"]\n");
         linhas.add("jmp sairMaior"+seqMaior+"\n");
-        linhas.add("naoMaior"+seqMaior+": store 1, ["+result+"]\n");
-        linhas.add("sairMaior"+seqMaior+"\n");
+        linhas.add("naoMaior"+seqMaior+": store 0, ["+result+"]\n");
+        linhas.add("sairMaior"+seqMaior+":\n");
 
         return linhas;
     }
@@ -512,7 +727,7 @@ public class DicionarioCodigoAlvo {
         linhas.add("maiorIgualMenor"+seqMaiorIgual+": store 0, ["+result+"]\n");
         linhas.add("jmp sairMaiorIgual"+seqMaiorIgual+"\n");
         linhas.add("maiorIgualIgual"+seqMaiorIgual+": store 1, ["+result+"]\n");
-        linhas.add("sairMaiorIgual"+seqMaiorIgual+"\n");
+        linhas.add("sairMaiorIgual"+seqMaiorIgual+":\n");
 
         return linhas;
     }
@@ -547,7 +762,7 @@ public class DicionarioCodigoAlvo {
         linhas.add("menor"+seqMenor+": store 1, ["+result+"]\n");
         linhas.add("jmp sairMenor"+seqMenor+"\n");
         linhas.add("naoMenorIgual"+seqMenor+": store 0, ["+result+"]\n");
-        linhas.add("sairMenor"+seqMenor+"\n");
+        linhas.add("sairMenor"+seqMenor+":\n");
 
         return linhas;
     }
@@ -579,7 +794,7 @@ public class DicionarioCodigoAlvo {
         linhas.add("naoMenorOuIgual"+seqMenorIgual+": store 0, ["+result+"]\n");
         linhas.add("jmp sairMenorIgual"+seqMenorIgual+"\n");
         linhas.add("menorOuIgual"+seqMenorIgual+": store 1, ["+result+"]\n");
-        linhas.add("sairMenorIgual"+seqMenorIgual+"\n");
+        linhas.add("sairMenorIgual"+seqMenorIgual+":\n");
 
         return linhas;
     }
@@ -607,11 +822,11 @@ public class DicionarioCodigoAlvo {
 
         String seqDiferente = getSequenciaDiferentes();
 
-        linhas.add("jmpEQ R1=R2, diferente"+seqDiferente+"\n");
-        linhas.add("naoDiferente"+seqDiferente+": store 1, ["+result+"]\n");
+        linhas.add("jmpEQ R1=R2, naoDiferente"+seqDiferente+"\n");
+        linhas.add("diferente"+seqDiferente+": store 1, ["+result+"]\n");
         linhas.add("jmp sairDiferente"+seqDiferente+"\n");
-        linhas.add("diferente"+seqDiferente+": store 0, ["+result+"]\n");
-        linhas.add("sairDiferente"+seqDiferente+"\n");
+        linhas.add("naoDiferente"+seqDiferente+": store 0, ["+result+"]\n");
+        linhas.add("sairDiferente"+seqDiferente+":\n");
 
         return linhas;
     }
@@ -669,7 +884,7 @@ public class DicionarioCodigoAlvo {
     public static List<String> getLabel(String result)
     {
         List<String> linhas = new  ArrayList<>();
-        linhas.add(result + "\n");
+        linhas.add(result+":\n");
 
         return linhas;
     }
@@ -698,10 +913,9 @@ public class DicionarioCodigoAlvo {
     public static List<String> getReturn(String operEsq)
     {
         List<String> linhas = new  ArrayList<>();
-        StringBuilder linhaTraduzida = new StringBuilder();
+        StringBuilder linhaTraduzida;
 
-        linhaTraduzida.append(getLabel("return")); //cria um label
-        linhas.add(linhaTraduzida.toString());
+        linhas.add("return:\n");
         linhaTraduzida = new StringBuilder();
 
         //carrego o valor de retorno
@@ -709,10 +923,6 @@ public class DicionarioCodigoAlvo {
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
         else
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-        linhas.add(linhaTraduzida.toString());
-        linhaTraduzida = new StringBuilder();
-
-        linhaTraduzida.append(getLabel("return")); //cria um label
         linhas.add(linhaTraduzida.toString());
 
         linhas.add("store R1, [return]\n");
@@ -809,7 +1019,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaMultiplicacoes()
     {
-        return "multiplicacao"+ contadorMultiplicacoes++;
+        return "" + contadorMultiplicacoes++;
     }
 
     /**
@@ -817,7 +1027,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaDivisoes()
     {
-        return "divisao"+ contadorDivisores++;
+        return "" + contadorDivisores++;
     }
 
     /**
@@ -825,7 +1035,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaIguais()
     {
-        return "igual"+ contadorIguais++;
+        return "" + contadorIguais++;
     }
 
     /**
@@ -833,7 +1043,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaDiferentes()
     {
-        return "diferente"+ contadorDiferentes++;
+        return "" + contadorDiferentes++;
     }
 
     /**
@@ -841,7 +1051,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaMenorIguais()
     {
-        return "menorIguais"+ contadorMenorIguais++;
+        return "" + contadorMenorIguais++;
     }
 
     /**
@@ -849,7 +1059,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaMaiorIguais()
     {
-        return "maiorIgual"+ contadorMaiorIguais++;
+        return "" + contadorMaiorIguais++;
     }
 
     /**
@@ -857,7 +1067,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaMaiores()
     {
-        return "maior"+ contadorMaiores++;
+        return "" + contadorMaiores++;
     }
 
     /**
@@ -865,7 +1075,7 @@ public class DicionarioCodigoAlvo {
      * */
     public static String getSequenciaMenores()
     {
-        return "menor"+ contadorMenores++;
+        return "" + contadorMenores++;
     }
 
     //    /**

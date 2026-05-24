@@ -6,7 +6,6 @@ import java.util.List;
 
 public class GeradorCodigoAlvo {
     private List<String> codigoAlvo;
-    private int contadorContinua;
 
     public GeradorCodigoAlvo(List<String> codigoAlvo) {
         this.codigoAlvo = codigoAlvo;
@@ -14,13 +13,17 @@ public class GeradorCodigoAlvo {
 
     public GeradorCodigoAlvo() {
         this.codigoAlvo = new ArrayList<>();
-        contadorContinua = 1;
     }
 
     public List<String> getCodigoAlvo(List<TAC> codigoIntermediarioOtimizado)
     {
         // limpar a lista por default
         codigoAlvo.clear();
+
+        if(DicionarioCodigoAlvo.list_numeros == null)
+        {
+            DicionarioCodigoAlvo.preencheNumeros();
+        }
 
         // para cada linha de TAC (three address code) é feita uma tradução para o assembly
         for(TAC instrucao : codigoIntermediarioOtimizado)
@@ -56,6 +59,9 @@ public class GeradorCodigoAlvo {
                 break;
             case "/": // subtracoes sucessivas
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getDivComVariaveis(operEsq, operDir, result, codigoAlvo);
+                break;
+            case "%":
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getRestoComVariaveis(operEsq, operDir, result, codigoAlvo);
                 break;
             case "==":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getCompIgual(operEsq, operDir, result, codigoAlvo);
@@ -93,5 +99,14 @@ public class GeradorCodigoAlvo {
         }
 
         return instrucoesTraduzidas;
+    }
+
+    public void imprimirCodigoAlvo()
+    {
+        for(String codigoAssembly : codigoAlvo)
+        {
+            System.out.print(codigoAssembly);
+        }
+        System.out.println("\n");
     }
 }
