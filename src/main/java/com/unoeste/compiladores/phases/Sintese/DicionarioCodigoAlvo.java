@@ -18,6 +18,8 @@ public class DicionarioCodigoAlvo {
     public static int contadorMaiores = 0;
     public static int contadorMenores = 0;
     public static int contadorRestos = 0;
+    public static int contadorAnds = 0;
+    public static int contadorOrs = 0;
 
     public static void resetarValores(){
         preencheNumeros();
@@ -41,7 +43,7 @@ public class DicionarioCodigoAlvo {
         // 1.
         // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA ESQUERDA
         if(!isNumero(operEsq))
@@ -82,7 +84,7 @@ public class DicionarioCodigoAlvo {
 
         // LABEL DO RESULTADO
         if(!resultExists(result, codigoAlvo))
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // =========================================================
         // OPERANDO DA ESQUERDA -> R1
@@ -174,8 +176,11 @@ public class DicionarioCodigoAlvo {
         // =========================================================
         if(!resultExists(result, codigoAlvo))
         {
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
         }
+
+        linhas.add("load RC, 11111111b\n");
+        linhas.add("load RB, 1\n");
 
         // =========================================================
         // OPERANDO DA ESQUERDA -> R1
@@ -219,16 +224,16 @@ public class DicionarioCodigoAlvo {
         linhas.add("move R0, R6\n"); // registrador correto para o teste do jump
         linhas.add("jmpLE R1<=R0, " + lblEsqNeg + "\n");
 
-        linhas.add("move R3, 0\n");
+        linhas.add("load R3, 0\n");
         linhas.add("jmp " + lblEsqFim + "\n");
 
         linhas.add(lblEsqNeg + ":\n");
 
-        linhas.add("move R3, 1\n");
+        linhas.add("load R3, 1\n");
 
         // transformar em positivo
-        linhas.add("xor R7, R1, 11111111b\n");
-        linhas.add("addi R1, R7, 1\n");
+        linhas.add("xor R7, R1, RC\n");
+        linhas.add("addi R1, R7, RB\n");
 
         linhas.add(lblEsqFim + ":\n");
 
@@ -240,16 +245,16 @@ public class DicionarioCodigoAlvo {
         linhas.add("move R0, R6\n"); // registrador correto para o teste do jump
         linhas.add("jmpLE R2<=R0, " + lblDirNeg + "\n");
 
-        linhas.add("move R4, 0\n");
+        linhas.add("load R4, 0\n");
         linhas.add("jmp " + lblDirFim + "\n");
 
         linhas.add(lblDirNeg + ":\n");
 
-        linhas.add("move R4, 1\n");
+        linhas.add("load R4, 1\n");
 
         // transformar em positivo
-        linhas.add("xor R7, R2, 11111111b\n");
-        linhas.add("addi R2, R7, 1\n");
+        linhas.add("xor R7, R2, RC\n");
+        linhas.add("addi R2, R7, RB\n");
 
         linhas.add(lblDirFim + ":\n");
 
@@ -290,8 +295,8 @@ public class DicionarioCodigoAlvo {
         linhas.add("load R0, 0\n"); // registrador correto para teste do jump
         linhas.add("jmpEQ R7=R0, " + lblResultadoPositivo + "\n");
 
-        linhas.add("xor R6, R3, 11111111b\n");
-        linhas.add("addi R3, R6, 1\n");
+        linhas.add("xor R6, R3, RC\n");
+        linhas.add("addi R3, R6, RB\n");
 
         linhas.add(lblResultadoPositivo + ":\n");
 
@@ -330,8 +335,11 @@ public class DicionarioCodigoAlvo {
         // LABEL DO RESULTADO
         if(!resultExists(result, codigoAlvo))
         {
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
         }
+
+        linhas.add("load RC, 11111111b\n");
+        linhas.add("load RB, 1\n");
 
         // =========================================================
         // OPERANDO DA ESQUERDA -> R1
@@ -372,13 +380,13 @@ public class DicionarioCodigoAlvo {
         // =========================================================
         linhas.add("move R0, R6\n"); // registrador correto para o teste do jump
         linhas.add("jmpLE R1<=R0, " + lblEsqNeg + "\n");
-        linhas.add("move R3, 0\n");
+        linhas.add("load R3, 0\n");
         linhas.add("jmp " + lblEsqFim + "\n");
 
         linhas.add(lblEsqNeg + ":\n");
-        linhas.add("move R3, 1\n");
-        linhas.add("xor R7, R1, 11111111b\n");
-        linhas.add("addi R1, R7, 1\n"); // R1 = abs(R1)
+        linhas.add("load R3, 1\n");
+        linhas.add("xor R7, R1, RC\n");
+        linhas.add("addi R1, R7, RB\n"); // R1 = abs(R1)
 
         linhas.add(lblEsqFim + ":\n");
 
@@ -389,13 +397,13 @@ public class DicionarioCodigoAlvo {
         // =========================================================
         linhas.add("move R0, R6\n"); // registrador correto para o teste do jump
         linhas.add("jmpLE R2<=R0, " + lblDirNeg + "\n");
-        linhas.add("move R4, 0\n");
+        linhas.add("load R4, 0\n");
         linhas.add("jmp " + lblDirFim + "\n");
 
         linhas.add(lblDirNeg + ":\n");
-        linhas.add("move R4, 1\n");
-        linhas.add("xor R7, R2, 11111111b\n");
-        linhas.add("addi R2, R7, 1\n"); // R2 = abs(R2)
+        linhas.add("load R4, 1\n");
+        linhas.add("xor R7, R2, RC\n");
+        linhas.add("addi R2, R7, RB\n"); // R2 = abs(R2)
 
         linhas.add(lblDirFim + ":\n");
 
@@ -434,8 +442,8 @@ public class DicionarioCodigoAlvo {
         // =========================================================
         linhas.add("load R0, 0\n");
         linhas.add("jmpEQ RF=R0, " + lblSinalPos + "\n");
-        linhas.add("xor R7, R5, 11111111b\n");
-        linhas.add("addi R5, R7, 1\n"); // R5 = -R5
+        linhas.add("xor R7, R5, RC\n");
+        linhas.add("addi R5, R7, RB\n"); // R5 = -R5
 
         linhas.add(lblSinalPos + ":\n");
         linhas.add("store R5, [" + result + "]\n");
@@ -445,7 +453,7 @@ public class DicionarioCodigoAlvo {
         // DIVISÃO POR ZERO
         // =========================================================
         linhas.add(lblDivZero + ":\n");
-        linhas.add("move R5, 0\n");
+        linhas.add("load R5, 0\n");
         linhas.add("store R5, [" + result + "]\n");
 
         linhas.add(lblFimDiv + ":\n");
@@ -479,8 +487,11 @@ public class DicionarioCodigoAlvo {
         // label do resultado
         if(!resultExists(result, codigoAlvo))
         {
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
         }
+
+        linhas.add("load RC, 11111111b\n");
+        linhas.add("load RB, 1\n");
 
         // operando esquerdo -> R1
         if(!isNumero(operEsq))
@@ -504,23 +515,23 @@ public class DicionarioCodigoAlvo {
         // sinal do operando esquerdo: R3 = 0 positivo, 1 negativo
         linhas.add("move R0, R6\n"); // registrador correto para o teste do jump
         linhas.add("jmpLE R1<=R0, " + lblEsqNeg + "\n");
-        linhas.add("move R3, 0\n");
+        linhas.add("load R3, 0\n");
         linhas.add("jmp " + lblEsqFim + "\n");
         linhas.add(lblEsqNeg + ":\n");
-        linhas.add("move R3, 1\n");
-        linhas.add("xor R7, R1, 11111111b\n");
-        linhas.add("addi R1, R7, 1\n");
+        linhas.add("load R3, 1\n");
+        linhas.add("xor R7, R1, RC\n");
+        linhas.add("addi R1, R7, RB\n");
         linhas.add(lblEsqFim + ":\n");
 
         // sinal do operando direito: R4 = 0 positivo, 1 negativo
         linhas.add("move R0, R6\n"); // registrador correto para teste do jump
         linhas.add("jmpLE R2<=R0, " + lblDirNeg + "\n");
-        linhas.add("move R4, 0\n");
+        linhas.add("load R4, 0\n");
         linhas.add("jmp " + lblDirFim + "\n");
         linhas.add(lblDirNeg + ":\n");
-        linhas.add("move R4, 1\n");
-        linhas.add("xor R7, R2, 11111111b\n");
-        linhas.add("addi R2, R7, 1\n");
+        linhas.add("load R4, 1\n");
+        linhas.add("xor R7, R2, RC\n");
+        linhas.add("addi R2, R7, RB\n");
         linhas.add(lblDirFim + ":\n");
 
         // divisão por zero
@@ -550,15 +561,15 @@ public class DicionarioCodigoAlvo {
 
         // Resto positivo: R1 - R5
         // faz isso por complemento de 2 em R5 e soma em R1
-        linhas.add("xor R7, R5, 11111111b\n");
-        linhas.add("addi R7, R7, 1\n");
+        linhas.add("xor R7, R5, RC\n");
+        linhas.add("addi R7, R7, RB\n");
         linhas.add("addi R5, R1, R7\n");                 // R5 = R1 - R5
 
         // sinal do resto: segue o sinal do operando esquerdo
         linhas.add("load R0, 0\n");
         linhas.add("jmpEQ R3=R0, " + lblSalvarPos + "\n");
-        linhas.add("xor R7, R5, 11111111b\n");
-        linhas.add("addi R5, R7, 1\n");
+        linhas.add("xor R7, R5, RC\n");
+        linhas.add("addi R5, R7, RB\n");
 
         linhas.add(lblSalvarPos + ":\n");
         linhas.add("store R5, [" + result + "]\n");
@@ -581,7 +592,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -622,7 +633,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -663,7 +674,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -687,7 +698,7 @@ public class DicionarioCodigoAlvo {
         String seqMaiorIgual = getSequenciaMaiorIguais();
 
         linhas.add("jmpEQ R1=R0, maiorIgualIgual"+seqMaiorIgual+"\n");
-        linhas.add("maiorIgualNaoIgual: jmpLE R1<=R0, maiorIgualMenor"+seqMaiorIgual+"\n");
+        linhas.add("maiorIgualNaoIgual"+seqMaiorIgual+": jmpLE R1<=R0, maiorIgualMenor"+seqMaiorIgual+"\n");
         linhas.add("maiorIgualMaior"+seqMaiorIgual+": store RB, ["+result+"]\n");
         linhas.add("jmp sairMaiorIgual"+seqMaiorIgual+"\n");
         linhas.add("maiorIgualMenor"+seqMaiorIgual+": store RA, ["+result+"]\n");
@@ -707,7 +718,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -731,12 +742,15 @@ public class DicionarioCodigoAlvo {
         String seqMenor = getSequenciaMenores();
 
         linhas.add("jmpEQ R1=R0, naoMenorIgual"+seqMenor+"\n");
-        linhas.add("menorNaoIgual: jmpLE R1<=R0, menor"+seqMenor+"\n");
+        linhas.add("jmpLE R1<=R0, menor"+seqMenor+"\n");
+
         linhas.add("naoMenorMaior"+seqMenor+": store RA, ["+result+"]\n");
         linhas.add("jmp sairMenor"+seqMenor+"\n");
+
         linhas.add("menor"+seqMenor+": store RB, ["+result+"]\n");
         linhas.add("jmp sairMenor"+seqMenor+"\n");
-        linhas.add("naoMenorIgual"+seqMenor+": store RB, ["+result+"]\n");
+
+        linhas.add("naoMenorIgual"+seqMenor+": store RA, ["+result+"]\n");
         linhas.add("sairMenor"+seqMenor+":\n");
 
         return linhas;
@@ -751,7 +765,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -792,7 +806,7 @@ public class DicionarioCodigoAlvo {
         StringBuilder linhaTraduzida = new StringBuilder();
 
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         // definir os registradores para os valores de 0 e 1
         //      0 -> falso   -> RA
@@ -837,7 +851,7 @@ public class DicionarioCodigoAlvo {
 
         // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
         if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+            linhas.add(result+":\n");
 
         if(isNumero(operEsq)) //mando o número diretamente
             linhaTraduzida.append("load R2, ").append(operEsq).append("\n");
@@ -928,85 +942,99 @@ public class DicionarioCodigoAlvo {
     }
 
     /**
-     * RETORNA UM CONJUNTO DE INSTRUÇÕES PARA A OPERAÇÃO BINÁRIA AND
-     * */
+     * RETORNA UM CONJUNTO DE INSTRUÇÕES PARA A OPERAÇÃO BINÁRIA AND LÓGICA
+     * resultado: 1 se verdadeiro, 0 se falso
+     */
     public static List<String> getAndComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
-        List<String> linhas = new  ArrayList<>();
+        List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
 
-        // 1.
-        // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
-        if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+        String seqAnd = getSequenciaAnds(); // se ainda não tiver, crie um contador igual aos outros
+        String lblFalse = "and_false_" + seqAnd;
+        String lblFim = "and_fim_" + seqAnd;
 
-        // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA ESQUERDA
+        if(!resultExists(result, codigoAlvo))
+            linhas.add(result+":\n");
+
         if(!isNumero(operEsq))
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-        else // É UM NÚMERO CRU -> OPERADOR DA ESQUERDA
+        else
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA DIREITA
         if(!isNumero(operDir))
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-        else // É UM NÚMERO CRU -> OPERADOR DA DIREITA
+        else
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
         linhas.add(linhaTraduzida.toString());
-        linhaTraduzida = new StringBuilder();
 
-        //realizar apenas soma de valores inteiros
-        linhaTraduzida.append("and R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+        linhas.add("load R0, 0\n");
 
-        linhas.add(linhaTraduzida.toString());
-        linhaTraduzida = new StringBuilder();
+        linhas.add("jmpEQ R1=R0, " + lblFalse + "\n");
+        linhas.add("jmpEQ R2=R0, " + lblFalse + "\n");
+        linhas.add("load R3, 1\n");
+        linhas.add("store R3, [" + result + "]\n");
+        linhas.add("jmp " + lblFim + "\n");
 
-        // ARMAZENAR O RESULTADO NA VARIÁVEL
-        linhaTraduzida.append("store R3, [").append(result).append("]\n");
-        linhas.add(linhaTraduzida.toString());
+        linhas.add(lblFalse + ":\n");
+        linhas.add("load R3, 0\n");
+        linhas.add("store R3, [" + result + "]\n");
+
+        linhas.add(lblFim + ":\n");
 
         return linhas;
     }
 
     /**
-     * RETORNA UM CONJUNTO DE INSTRUÇÕES PARA A OPERAÇÃO BINÁRIA OR
-     * */
+     * RETORNA UM CONJUNTO DE INSTRUÇÕES PARA A OPERAÇÃO BINÁRIA OR LÓGICA
+     * resultado: 1 se verdadeiro, 0 se falso
+     */
     public static List<String> getOrComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
-        List<String> linhas = new  ArrayList<>();
+        List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
 
-        // 1.
-        // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
-        if(!resultExists(result, codigoAlvo)) // SE NÃO EXISTIR EU CRIO UM LABEL PARA A VARIÁVEL DE DESTINO
-            linhas.add(result + ":\n");
+        String seqOr = getSequenciaOrs(); // se ainda não tiver, crie um contador igual aos outros
+        String lblChecaDir = "or_checa_dir_" + seqOr;
+        String lblTrue = "or_true_" + seqOr;
+        String lblFim = "or_fim_" + seqOr;
 
-        // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA ESQUERDA
+        if(!resultExists(result, codigoAlvo))
+            linhas.add(result+":\n");
+
         if(!isNumero(operEsq))
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-        else // É UM NÚMERO CRU -> OPERADOR DA ESQUERDA
+        else
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA DIREITA
         if(!isNumero(operDir))
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-        else // É UM NÚMERO CRU -> OPERADOR DA DIREITA
+        else
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
         linhas.add(linhaTraduzida.toString());
-        linhaTraduzida = new StringBuilder();
 
-        //realizar apenas soma de valores inteiros
-        linhaTraduzida.append("or R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
+        linhas.add("load R0, 0\n");
 
-        linhas.add(linhaTraduzida.toString());
-        linhaTraduzida = new StringBuilder();
+        linhas.add("jmpEQ R1=R0, " + lblChecaDir + "\n");
+        linhas.add("load R3, 1\n");
+        linhas.add("store R3, [" + result + "]\n");
+        linhas.add("jmp " + lblFim + "\n");
 
-        // ARMAZENAR O RESULTADO NA VARIÁVEL
-        linhaTraduzida.append("store R3, [").append(result).append("]\n");
-        linhas.add(linhaTraduzida.toString());
+        linhas.add(lblChecaDir + ":\n");
+        linhas.add("jmpEQ R2=R0, " + lblTrue + "\n");
+        linhas.add("load R3, 1\n");
+        linhas.add("store R3, [" + result + "]\n");
+        linhas.add("jmp " + lblFim + "\n");
+
+        linhas.add(lblTrue + ":\n");
+        linhas.add("load R3, 0\n");
+        linhas.add("store R3, [" + result + "]\n");
+
+        linhas.add(lblFim + ":\n");
 
         return linhas;
     }
@@ -1143,5 +1171,19 @@ public class DicionarioCodigoAlvo {
     public static String getSequenciaRestos()
     {
         return "" + contadorRestos++;
+    }
+
+    /**
+     * RETORNA O PRÓXIMO ÍNDICE DE OPERAÇÃO LÓGICA AND
+     * */
+    public static String getSequenciaAnds() {
+        return "" + contadorAnds++;
+    }
+
+    /**
+     * RETORNA O PRÓXIMO ÍNDICE DE OPERAÇÃO LÓGICA OR
+     * */
+    public static String getSequenciaOrs() {
+        return "" + contadorOrs++;
     }
 }
