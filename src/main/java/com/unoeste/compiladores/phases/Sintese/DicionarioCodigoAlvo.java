@@ -2,7 +2,6 @@ package com.unoeste.compiladores.phases.Sintese;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Dicionário de instruções, de valores TAC (Three Address Code) para instruções Simple Assembler
