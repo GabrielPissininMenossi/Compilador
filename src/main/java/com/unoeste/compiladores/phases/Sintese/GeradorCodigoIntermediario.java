@@ -277,9 +277,6 @@ public class GeradorCodigoIntermediario {
         return valor.equals("&&") || valor.equals("||");
     }
 
-
-
-
     public void imprimirInstrucoes() {
         for (TAC tac : instrucoes) {
             if (tac.getOperador().equals("label")) {

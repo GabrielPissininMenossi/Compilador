@@ -197,7 +197,7 @@ public class MainController implements Initializable {
             otimizador.imprimirInstrucoesOtimizadas();
 
             // GERAÇÃO DO CÓDIGO ALVO
-            System.out.println("\n\nGeração de código algo [desenvolvimento] ==============================================================================");
+            System.out.println("\n\nGeração de código algo ==============================================================================");
             GeradorCodigoAlvo geradorCodigoAlvo = new GeradorCodigoAlvo();
             List<String> codigosSimpSim = geradorCodigoAlvo.getCodigoAlvo(codigosOtimizados);
             geradorCodigoAlvo.imprimirCodigoAlvo();

@@ -1,9 +1,5 @@
 package com.unoeste.compiladores.entities.AST;
 
-import com.unoeste.compiladores.entities.TAC;
-import com.unoeste.compiladores.entities.queue.FilaGenerica;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class AST {
@@ -23,19 +19,6 @@ public class AST {
 
     public void setRaiz(NoAST raiz) {
         this.raiz = raiz;
-    }
-
-    // Gerar os códigos de 3 endereços a partir da árvore já construída
-    public List<TAC> generateThreeAddressCode()
-    {
-        if(raiz == null)
-            return null;
-
-        List<TAC> linhas = new ArrayList<>();
-
-        // código aqui para a geração dos códigos de 3 endereços com a árvore já montada
-
-        return linhas;
     }
 
     public void exibirArvoreNivel() {

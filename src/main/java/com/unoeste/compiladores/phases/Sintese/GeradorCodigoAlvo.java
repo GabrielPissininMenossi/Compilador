@@ -20,10 +20,7 @@ public class GeradorCodigoAlvo {
         // limpar a lista por default
         codigoAlvo.clear();
 
-        if(DicionarioCodigoAlvo.list_numeros == null)
-        {
-            DicionarioCodigoAlvo.preencheNumeros();
-        }
+        DicionarioCodigoAlvo.resetarValores();
 
         // para cada linha de TAC (three address code) é feita uma tradução para o assembly
         for(TAC instrucao : codigoIntermediarioOtimizado)
@@ -85,7 +82,7 @@ public class GeradorCodigoAlvo {
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getAtribuicao(operEsq, result, codigoAlvo);
                 break;
             case "ifFalse":
-                instrucoesTraduzidas = DicionarioCodigoAlvo.getIfFalse(operEsq, operDir, result, codigoAlvo);
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getIfFalse(operEsq, result);
                 break;
             case "label":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getLabel(result);

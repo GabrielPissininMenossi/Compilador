@@ -1,7 +1,6 @@
 package com.unoeste.compiladores.entities.AST;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class NoAST {
@@ -75,80 +74,6 @@ public class NoAST {
     public void addFilho(NoAST no)
     {
         filhos.add(no);
-    }
-
-    public void addFilhos(List<NoAST> noses)
-    {
-        filhos.addAll(noses);
-    }
-
-    // Limpar todos os filhos do Nó
-    public void limparFilhos()
-    {
-        filhos.clear();
-    }
-
-    // Verificações lógicas
-    private boolean isNumero(String token)
-    {
-        List<Character> list_numeros = new ArrayList<>();
-        for(int i=0; i<10; i++) //vai inserir '0' até o '9'
-        {
-            char character = (char)(i+48);
-            list_numeros.add(character);
-        }
-        if (!token.isEmpty())
-        {
-            int quantPonto = 0, quantNum=0;
-
-            for(int i=0; i<token.length(); i++)
-                if (token.charAt(i) == '.')
-                    quantPonto++;
-
-            if(quantPonto > 1) //mais de um ponto
-                return false;
-
-            for(int i=0; i<token.length(); i++)
-                if(list_numeros.contains(token.charAt(i)))
-                    quantNum++;
-
-            return quantNum == token.length()-quantPonto;
-        }
-        return false;
-    }
-
-    private boolean isIdentificador(String token)
-    {
-        List<Character> list_numeros = new ArrayList<>();
-        for(int i=0; i<10; i++) //vai inserir '0' até o '9'
-        {
-            char character = (char)(i+48);
-            list_numeros.add(character);
-        }
-        List<Character> list_especiais = new ArrayList<>(Arrays.asList('@', '#', '$'));
-
-        //primeiro dígito n pode ser número
-        if(list_numeros.contains(token.charAt(0)))
-            return false;
-
-        //primeiro digito n pode ser underline
-        if(token.charAt(0) == '_')
-            return false;
-
-        //n pode conter sinbolos especiais
-        for(int i=0; i<token.length(); i++)
-            if(list_especiais.contains(token.charAt(i)))
-                return false;
-
-        //se chegou aqui é valido
-        return true;
-    }
-
-    private boolean isOperador()
-    {
-        List<String> list_operadores = new ArrayList<>(Arrays.asList("*", "+", "-", "/", "%"));
-
-        return list_operadores.contains(valor);
     }
 
     public boolean isFolha(){

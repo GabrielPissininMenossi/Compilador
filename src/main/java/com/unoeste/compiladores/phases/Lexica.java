@@ -3,7 +3,6 @@ package com.unoeste.compiladores.phases;
 import com.unoeste.compiladores.entities.Erro;
 import com.unoeste.compiladores.entities.Token;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TextArea;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,6 @@ public class Lexica
     private List<Token> list_tokens = new ArrayList<>();
 
     private ObservableList<Token> tabelaSucessos;
-    private TextArea logErro;
 
     public Lexica(ObservableList<Token> tabelaSucessos, List<Erro> list_erro)
     {

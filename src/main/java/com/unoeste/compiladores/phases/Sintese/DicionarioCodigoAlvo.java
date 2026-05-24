@@ -17,6 +17,7 @@ public class DicionarioCodigoAlvo {
     public static int contadorMaiorIguais = 0;
     public static int contadorMaiores = 0;
     public static int contadorMenores = 0;
+    public static int contadorRestos = 0;
 
     public static void resetarValores(){
         preencheNumeros();
@@ -30,15 +31,12 @@ public class DicionarioCodigoAlvo {
     }
 
     /**
-     * RETORNA AS INSTRUÇÕES PARA SE REALIZAR UMA SOMA COM DIFERENTES VARIÁVEIS E/OU NÚMEROS
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA OPERAÇÃO ARITMÉTICA DE SOMA
      * */
     public static List<String> getSomaComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
-        boolean isDouble = false;
-        String numero = "";
-        preencheNumeros();
 
         // 1.
         // VERIFICO SE A VARIÁVEL DE RETORNO AINDA NÃO EXISTE
@@ -47,46 +45,19 @@ public class DicionarioCodigoAlvo {
 
         // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA ESQUERDA
         if(!isNumero(operEsq))
-        {
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-            //numero = getValorVariavel(operEsq, codigoAlvo);
-        }
         else // É UM NÚMERO CRU -> OPERADOR DA ESQUERDA
-        {
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
-            //numero = operEsq;
-        }
-        // VERIFICANDO SE O VALOR RECUPERADO DO OPERADOR É DOUBLE
-//        if(isDouble(numero))
-//            isDouble = true;
-//        numero = "";
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
         // VERIFICANDO SE É UM NÚMERO "CRU" OU SE É UMA VARIÁVEL -> OPERADOR DA DIREITA
         if(!isNumero(operDir))
-        {
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-            //numero = getValorVariavel(operDir, codigoAlvo);
-        }
         else // É UM NÚMERO CRU -> OPERADOR DA DIREITA
-        {
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
-            //numero = operDir;
-        }
-//        if(isDouble(numero))
-//            isDouble = true;
-//        numero = "";
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
-
-//        // VERIFICANDO SE ALGUM OPERADOR POSSUI VALOR DOUBLE
-//        if(isDouble) // realizar adição de valores DOUBLE
-//        {
-//            linhaTraduzida.append("addf R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
-//        }
-//        else // realizar adição de valores INTEIROS
-//            linhaTraduzida.append("addi R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
 
         //realizar apenas soma de valores inteiros
         linhaTraduzida.append("addi R3, R1, R2\n"); // adição entre dois registradores -> armazenar em R3
@@ -102,69 +73,36 @@ public class DicionarioCodigoAlvo {
     }
 
     /**
-     * RETORNA AS INSTRUÇÕES PARA SE REALIZAR UMA SUBTRAÇÃO COM DIFERENTES VARIÁVEIS E/OU NÚMEROS
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA OPERAÇÃO ARITMÉTICA DE SUBTRAÇÃO
      * */
     public static List<String> getSubComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
 
-        boolean isDouble = false;
-        String numero = "";
-
-        preencheNumeros();
-
         // LABEL DO RESULTADO
         if(!resultExists(result, codigoAlvo))
-        {
             linhas.add(result + ":\n");
-        }
 
         // =========================================================
         // OPERANDO DA ESQUERDA -> R1
         // =========================================================
         if(!isNumero(operEsq))
-        {
             linhaTraduzida.append("load R1, [").append(operEsq).append("]\n");
-
-            //numero = getValorVariavel(operEsq, codigoAlvo);
-        }
         else
-        {
             linhaTraduzida.append("load R1, ").append(operEsq).append("\n");
-
-            //numero = operEsq;
-        }
-
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
-
-//        if(isDouble(numero))
-//            isDouble = true;
-//
-//        numero = "";
 
         // =========================================================
         // OPERANDO DA DIREITA -> R2
         // =========================================================
         if(!isNumero(operDir))
-        {
             linhaTraduzida.append("load R2, [").append(operDir).append("]\n");
-            //numero = getValorVariavel(operDir, codigoAlvo);
-        }
         else
-        {
             linhaTraduzida.append("load R2, ").append(operDir).append("\n");
-            //numero = operDir;
-        }
-
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
-
-//        if(isDouble(numero))
-//            isDouble = true;
-//
-//        numero = "";
 
         // =========================================================
         // INVERTER O SINAL DE R2 EM TEMPO DE EXECUÇÃO
@@ -194,15 +132,6 @@ public class DicionarioCodigoAlvo {
         linhas.add(linhaTraduzida.toString());
         linhaTraduzida = new StringBuilder();
 
-        // =========================================================
-        // SOMA FINAL
-        // R3 = R1 + (-R2)
-        // =========================================================
-//        if(isDouble)
-//            linhaTraduzida.append("addf R3, R1, R2\n");
-//        else
-//            linhaTraduzida.append("addi R3, R1, R2\n");
-
         // REALIZAR SOMA APENAS COM VALORES INTEIROS
         linhaTraduzida.append("addi R3, R1, R2\n");
 
@@ -219,12 +148,13 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA OPERAÇÃO ARITMÉTICA DE MULIPLICAÇÃO
+     * */
     public static List<String> getMultComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
-
-        preencheNumeros();
 
         String seqMult = getSequenciaMultiplicacoes();
 
@@ -369,12 +299,13 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA OPERAÇÃO ARITMÉTICA DE DIVISÃO
+     * */
     public static List<String> getDivComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
-
-        preencheNumeros();
 
         String seqDiv = getSequenciaDivisoes();
 
@@ -513,19 +444,13 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
-    public static int contadorRestos = 0;
-
-    public static String getSequenciaRestos()
-    {
-        return "resto" + contadorRestos++;
-    }
-
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA OPERAÇÃO ARITMÉTICA DE RESTO DE DIVISÃO
+     * */
     public static List<String> getRestoComVariaveis(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
-
-        preencheNumeros();
 
         String seqResto = getSequenciaRestos();
 
@@ -633,6 +558,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: ==
+     * */
     public static List<String> getCompIgual(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -665,6 +593,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: >
+     * */
     public static List<String> getCompMaior(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -697,6 +628,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: >=
+     * */
     public static List<String> getCompMaiorIgual(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -732,6 +666,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: <
+     * */
     public static List<String> getCompMenor(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -767,6 +704,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: <=
+     * */
     public static List<String> getCompMenorIgual(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -799,6 +739,9 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UMA COMPARAÇÃO: !=
+     * */
     public static List<String> getCompDiferente(String operEsq, String operDir, String result, List<String> codigoAlvo)
     {
         List<String> linhas = new  ArrayList<>();
@@ -857,7 +800,10 @@ public class DicionarioCodigoAlvo {
         return linhas;
     }
 
-    public static List<String> getIfFalse(String operEsq, String operDir, String result, List<String> codigoAlvo)
+    /**
+     * RETORNA O CONJUNTO DE INSTRUÇÕES EQUIVALENTES A UM IF
+     * */
+    public static List<String> getIfFalse(String operEsq, String result)
     {
         List<String> linhas = new  ArrayList<>();
         StringBuilder linhaTraduzida = new StringBuilder();
@@ -952,6 +898,9 @@ public class DicionarioCodigoAlvo {
         return i<codigoAlvo.size();
     }
 
+    /**
+     * MÉTODO QUE VERIFICA SE UMA DETERMINADA STRING É UM NÚMERO
+     * */
     public static boolean isNumero(String token)
     {
         if (!token.isEmpty())
@@ -974,6 +923,9 @@ public class DicionarioCodigoAlvo {
         return false;
     }
 
+    /**
+     * PREENCHE UMA LISTA COM VALORES INTEIROS DE 0 ATÉ 9
+     * */
     public static void preencheNumeros()
     {
         list_numeros = new ArrayList<>();
@@ -985,35 +937,7 @@ public class DicionarioCodigoAlvo {
         }
     }
 
-    /**
-     * RETORNA O VALOR DA VARIÁVEL DE ACORDO COM O LABEL NO PROGRAMA ASSEMBLY.
-     * SENDO:
-     *      procura-se o label,
-     *      retorna o valor que o label possui
-     * */
-    private static String getValorVariavel(String operando, List<String> codigoAlvo)
-    {
-        // andar e procurar o respectivo operando
-        int i=0;
-        while(i<codigoAlvo.size() && !codigoAlvo.get(i).startsWith(operando))
-            i++;
-
-        if(i<codigoAlvo.size())
-            return codigoAlvo.get(i).substring(operando.length()).trim().replaceAll(" ","");
-
-        return null;
-    }
-
-    /**
-     * RETORNA SE O NÚMERO É DOUBLE OU NÃO
-     * */
-    private static boolean isDouble(String numero)
-    {
-        double valorDouble = Double.parseDouble(numero);
-        int parteInteira = (int)valorDouble;
-        return valorDouble-parteInteira != 0;
-    }
-
+    // GETS DE SEQUÊNCIA, PARA IDENTIFICAÇÃO ÚNICA NO CÓDIGO ASSEMBLY
     /**
      * RETORNA O PRÓXIMO ÍNDICE DE MULTIPLICAÇÕES
      * */
@@ -1078,82 +1002,12 @@ public class DicionarioCodigoAlvo {
         return "" + contadorMenores++;
     }
 
-    //    /**
-//     * RETORNA SE A OPERAÇÃO DE MULTIPLICAÇÃO OU DIVISÃO SERÁ POSITIVA
-//     * */
-//    private static boolean isPositivoResultMultDiv(String operEsq, String operDir, List<String> codigoAlvo)
-//    {
-//        String numero1;
-//        String numero2;
-//
-//        if(isNumero(operEsq)) {
-//            numero1 = operEsq;
-//        }
-//        else {
-//            numero1 = getValorVariavel(operEsq, codigoAlvo);
-//        }
-//
-//        if(isNumero(operDir)) {
-//            numero2 = operDir;
-//        }
-//        else{
-//            numero2 = getValorVariavel(operDir, codigoAlvo);
-//        }
-//
-//        String sinal = getSinalFinalMultDiv(numero1, numero2);
-//
-//        return sinal.equals("positivo");
-//    }
-//
-//    /**
-//     * RETORNA A REGRA DE SINAIS ENTRE DOIS NÚMEROS PASSADOS COMO STRING
-//     * */
-//    private static String getSinalFinalMultDiv(String numero1, String numero2){
-//        if(numero1.charAt(0) == '-') // 1 é negativo
-//            if(numero2.charAt(0) == '-') //2 é negativo
-//                return "positivo"; // os 2 são negativos
-//            else //2 é positivo
-//                return "negativo"; // apenas 1 é negativo
-//        else // 1 é positivo
-//            if(numero2.charAt(0) == '-') //2 é negativo
-//                return "negativo"; // apenas 1 é negativo
-//            else //2 é positivo
-//                return "positivo"; // os 2 são positivos
-//    }
-//
-//    /**
-//     * RETORNA A CONVERSÃO DE UM NÚMERO QUALQUER PARA POSITIVO
-//     * */
-//    private static String getNumeroPositivo(String numero)
-//    {
-//        if(numero.charAt(0) == '-')
-//            return numero.substring(1); //converte para positivo e retorna
-//        return numero; //já é positivo
-//    }
-//
-//    /**
-//     * RETORNA A CONVERSÃO DE UM NÚMERO QUALQUER PARA NEGATIVO
-//     * */
-//    private static String getNumeroNegativo(String numero)
-//    {
-//        if(numero.charAt(0) == '-')
-//            return numero; //já é negativo
-//        return "-"+numero; //converte para negativo e retorna
-//    }
-//
-//    /**
-//     * RETORNA UM NÚMERO INVERTIDO
-//     * Sendo:
-//     *      positivo --> negativo,
-//     *      nagativo --> positivo
-//     * */
-//    private static String getValorVariavelSinalInvertido(String operando)
-//    {
-//        char sinal = operando.charAt(0);
-//
-//        if(sinal == '-') // se negativo --> retorno um valor positivo --> sem o primeiro character
-//            return operando.substring(1);
-//
-//        return "-" + operando;
-//    }
+    /**
+     * RETORNA O PRÓXIMO ÍNDICE DE RESTOS DE DIVISÃO
+     * */
+    public static String getSequenciaRestos()
+    {
+        return "" + contadorRestos++;
+    }
+
 }
