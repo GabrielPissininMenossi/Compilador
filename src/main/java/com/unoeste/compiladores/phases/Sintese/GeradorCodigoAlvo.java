@@ -19,7 +19,6 @@ public class GeradorCodigoAlvo {
     {
         // limpar a lista por default
         codigoAlvo.clear();
-
         DicionarioCodigoAlvo.resetarValores();
 
         // para cada linha de TAC (three address code) é feita uma tradução para o assembly
@@ -48,13 +47,13 @@ public class GeradorCodigoAlvo {
             case "+":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getSomaComVariaveis(operEsq, operDir, result, codigoAlvo);
                 break;
-            case "-": // vou ter que usar complemento de 2
+            case "-":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getSubComVariaveis(operEsq, operDir, result, codigoAlvo);
                 break;
-            case "*": // somas sucessivas
+            case "*":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getMultComVariaveis(operEsq, operDir, result, codigoAlvo);
                 break;
-            case "/": // subtracoes sucessivas
+            case "/":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getDivComVariaveis(operEsq, operDir, result, codigoAlvo);
                 break;
             case "%":
@@ -93,6 +92,12 @@ public class GeradorCodigoAlvo {
             case "return":
                 instrucoesTraduzidas = DicionarioCodigoAlvo.getReturn(operEsq);
                 break;
+            case "&&":
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getAndComVariaveis(operEsq, operDir, result, codigoAlvo);
+                break;
+            case "||":
+                instrucoesTraduzidas = DicionarioCodigoAlvo.getOrComVariaveis(operEsq, operDir, result, codigoAlvo);
+                break;
         }
 
         return instrucoesTraduzidas;
@@ -101,9 +106,7 @@ public class GeradorCodigoAlvo {
     public void imprimirCodigoAlvo()
     {
         for(String codigoAssembly : codigoAlvo)
-        {
             System.out.print(codigoAssembly);
-        }
         System.out.println("\n");
     }
 }
